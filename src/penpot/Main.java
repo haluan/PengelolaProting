@@ -11,10 +11,6 @@ import java.util.logging.Logger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import penpot.Koneksi.JembatanLogin;
-import penpot.Objek.Dosen;
-import penpot.Objek.Pesan;
-import penpot.Proses.ControllerMahasiswa;
-import penpot.Proses.prosesPesan;
 import penpot.View.FormInduk;
 
 /**

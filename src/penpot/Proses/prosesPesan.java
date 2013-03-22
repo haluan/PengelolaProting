@@ -26,7 +26,7 @@ public class prosesPesan {
     public Pesan dosenKirimSiswa(String pengirimNip, String penerimaNim, Pesan p) throws SQLException {
         PreparedStatement st = conn.
                 prepareStatement("insert into pesan (isi,nim,nip,tanggal,sender,jam"
-                + ",proto) values(?,?,?,?,?,?,?)");
+                + ",proto,kepada) values(?,?,?,?,?,?,?,?)");
         st.setString(1, p.getIsi());
         st.setString(2, penerimaNim);
         st.setString(3, pengirimNip);
@@ -34,6 +34,7 @@ public class prosesPesan {
         st.setString(5, pengirimNip);
         st.setString(6, p.getJam());
         st.setString(7, p.getTgl());
+        st.setString(8, penerimaNim);
         st.executeUpdate();
         return p;
     }
@@ -41,7 +42,7 @@ public class prosesPesan {
     public Pesan siswaKirimDosen(String pengirimNim, String penerimaNip, Pesan p) throws SQLException {
         PreparedStatement st = conn.
                 prepareStatement("insert into pesan (isi,nim,nip,tanggal,sender,jam"
-                + ",proto) values(?,?,?,?,?,?,?)");
+                + ",proto,kepada) values(?,?,?,?,?,?,?,?)");
         st.setString(1, p.getIsi());
         st.setString(2, pengirimNim);
         st.setString(3, penerimaNip);
@@ -49,6 +50,7 @@ public class prosesPesan {
         st.setString(5, pengirimNim);
         st.setString(6, p.getJam());
         st.setString(7, p.getTgl());
+        st.setString(8, penerimaNip);
         st.executeUpdate();
         return p;
     }
@@ -57,7 +59,8 @@ public class prosesPesan {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
-                + "join dosen d using (nip) order by proto desc,jam desc";
+                + "join dosen d using (nip)"
+                + "where kepada='"+userNow+"' order by proto desc,jam desc";
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listMasuk = new ArrayList<Pesan>();
         while (rs.next()) {
@@ -80,7 +83,8 @@ public class prosesPesan {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
-                + "join dosen d using (nip) order by proto desc,jam desc";
+                + "join dosen d using (nip)"
+                + "where sender='"+userNow+"' order by proto desc,jam desc";
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listKeluar = new ArrayList<Pesan>();
         while (rs.next()) {
