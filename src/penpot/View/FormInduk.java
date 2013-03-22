@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import penpot.Objek.Admin;
 import penpot.Objek.Dosen;
+import penpot.Objek.Kelompok;
 import penpot.Objek.Mahasiswa;
 import penpot.Objek.Pesan;
 import penpot.Proses.ControllerAdmin;
@@ -46,27 +47,27 @@ public class FormInduk extends javax.swing.JFrame {
     private int sinyalemen;
     private int sinyalemenDaftar;
     prosesPesan propes = new prosesPesan();
-    
     private kelolaBaru kb = new kelolaBaru();
     private prosesMasuk posmas = new prosesMasuk();
-   //Record u/ tabel
+    //Record u/ tabel
     private List<Pesan> recordMasuk = new ArrayList<Pesan>();
     private List<Pesan> recordKeluar = new ArrayList<Pesan>();
     private List<Mahasiswa> recordSiswa = new ArrayList<Mahasiswa>();
     private List<Dosen> recordDosen = new ArrayList<>();
-    
+    private List<Mahasiswa> recordTemanKelompok = new ArrayList<>();
     //Instansiasi Controller
     private ControllerMahasiswa cm = new ControllerMahasiswa();
     private ControllerDosen cd = new ControllerDosen();
     private ControllerAdmin ca = new ControllerAdmin();
-    
     private prosesPesan prosespesan = new prosesPesan();
+    //variabel tambahan
     private int row;
     private static int seen;
     Pesan pesaN = new Pesan();
     private static String onUsed = "", tempPengirim, tempPenerima;
     private static int sinyalHapus;
-    private static String nim,nip;
+    private static String nim, nip;
+    private String idKelompok;
 
     public FormInduk() {
         initComponents();
@@ -80,7 +81,7 @@ public class FormInduk extends javax.swing.JFrame {
         about.setLocation(400, 200);
         newMail.setSize(600, 400);
         bacaPsnMasukMhs.setSize(600, 400);
-        editMahasiswa.setSize(400,300);
+        editMahasiswa.setSize(400, 300);
 
         t1.start();
         pesanMasukSiswa.setRowHeight(20);
@@ -88,7 +89,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         jComboBox1.addActionListener(new combox());
         jComboBox1.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
-        
+
         statusDaftar.addActionListener(new comboxDaftar());
         statusDaftar.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
 
@@ -147,7 +148,7 @@ public class FormInduk extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         tabelSiswaAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 row = tabelSiswaAdmin.getSelectedRow();
@@ -161,12 +162,12 @@ public class FormInduk extends javax.swing.JFrame {
                     editNamaAdmin.setText(m.getNama());
                     editKelasAdmin.setText(m.getKelas());
                     editStatusAdmin.setText(m.getStatus());
-                    
+
                     editMahasiswa.show();
                 }
             }
         });
-        
+
         tabelDosenAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 row = tabelDosenAdmin.getSelectedRow();
@@ -179,25 +180,22 @@ public class FormInduk extends javax.swing.JFrame {
                     Dosen d = recordDosen.get(row);
                     editNimAdmin.setText(d.getNip());
                     editNamaAdmin.setText(d.getNama());
-                    
+
                     editMahasiswa.show();
                 }
             }
         });
 
-        statusAwal();
+        tabelTemanKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabelTemanKelompok.getSelectedRow();
+                if (row != -1) {
+                }
+            }
+        });
     }
 
-    void loadData() {
-        try {
-            recordMasuk = prosespesan.getAllMasuk(onUsed);
-            recordKeluar = prosespesan.getAllKeluar(onUsed);
-            recordSiswa = cm.getAll();
-            recordDosen = cd.getAll();
-        } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
 
     void isiTabelMasuk() {
         Object data[][] = new Object[recordMasuk.size()][4];
@@ -239,6 +237,7 @@ public class FormInduk extends javax.swing.JFrame {
         pesanKeluarSiswa.setModel(new DefaultTableModel(data, judul));
         jScrollPane3.setViewportView(pesanKeluarSiswa);
     }
+
     void isiTabeSiswa() {
         int x = 0;
         Object data[][] = new Object[recordSiswa.size()][4];
@@ -253,7 +252,22 @@ public class FormInduk extends javax.swing.JFrame {
         tabelSiswaAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane7.setViewportView(tabelSiswaAdmin);
     }
-    
+
+    void isiTabelTemanKelompok() {
+        int x = 0;
+        Object data[][] = new Object[recordTemanKelompok.size()][4];
+        for (Mahasiswa m : recordTemanKelompok) {
+            data[x][0] = m.getNim();
+            data[x][1] = m.getNama();
+            data[x][2] = m.getKelas();
+            data[x][3] = m.getStatus();
+            x++;
+        }
+        String judul[] = {"nim", "nama", "kelas", "status"};
+        tabelTemanKelompok.setModel(new DefaultTableModel(data, judul));
+        jScrollPane10.setViewportView(tabelTemanKelompok);
+    }
+
     void isiTabelDosen() {
         int x = 0;
         Object data[][] = new Object[recordSiswa.size()][2];
@@ -266,13 +280,12 @@ public class FormInduk extends javax.swing.JFrame {
         tabelDosenAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane8.setViewportView(tabelDosenAdmin);
     }
-
-    void statusAwal() {
-        loadData();
-        isiTabelMasuk();
-        isiTabelKeluar();
-        isiTabeSiswa();
-        isiTabelDosen();
+    
+    private void loadPesan() throws SQLException{
+         recordMasuk = prosespesan.getAllMasuk(onUsed);
+            recordKeluar = prosespesan.getAllKeluar(onUsed);
+            isiTabelMasuk();
+            isiTabelKeluar();
     }
 
     private class combox implements ActionListener {
@@ -284,7 +297,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         }
     }
-    
+
     private class comboxDaftar implements ActionListener {
 
         @Override
@@ -313,7 +326,7 @@ public class FormInduk extends javax.swing.JFrame {
             used.setText("nip");
         }
     }
-    
+
     private void sinyalDaftar() {
         if (statusDaftar.getSelectedIndex() == 0) {
             sinyalemenDaftar = 0;//siswa
@@ -483,6 +496,12 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         kelompok = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        tabelTemanKelompok = new javax.swing.JTable();
+        jLabelan1 = new javax.swing.JLabel();
+        jLabelan = new javax.swing.JLabel();
+        namaDosenMhs = new javax.swing.JLabel();
+        namaKelompokMhs = new javax.swing.JLabel();
         upload = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         pesan = new javax.swing.JPanel();
@@ -1230,7 +1249,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1299,20 +1318,68 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
         jLabel11.setText("KELOMPOK");
 
+        tabelTemanKelompok.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane10.setViewportView(tabelTemanKelompok);
+
+        jLabelan1.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        jLabelan1.setText("dosen pembimbing");
+
+        jLabelan.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        jLabelan.setText("nama kelompok");
+
+        namaDosenMhs.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        namaDosenMhs.setText("jLabel5");
+
+        namaKelompokMhs.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        namaKelompokMhs.setText("jLabel8");
+
         javax.swing.GroupLayout kelompokLayout = new javax.swing.GroupLayout(kelompok);
         kelompok.setLayout(kelompokLayout);
         kelompokLayout.setHorizontalGroup(
             kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kelompokLayout.createSequentialGroup()
-                .addContainerGap(407, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel11)
                 .addGap(469, 469, 469))
+            .addGroup(kelompokLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(kelompokLayout.createSequentialGroup()
+                        .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelan1)
+                            .addComponent(jLabelan))
+                        .addGap(18, 18, 18)
+                        .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(namaKelompokMhs)
+                            .addComponent(namaDosenMhs))))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
         kelompokLayout.setVerticalGroup(
             kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(kelompokLayout.createSequentialGroup()
                 .addComponent(jLabel11)
-                .addGap(0, 592, Short.MAX_VALUE))
+                .addGap(55, 55, 55)
+                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelan1)
+                    .addComponent(namaDosenMhs))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelan)
+                    .addComponent(namaKelompokMhs))
+                .addGap(77, 77, 77)
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 324, Short.MAX_VALUE))
         );
 
         konten.add(kelompok, "kelompok");
@@ -1516,7 +1583,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(navigasi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(konten, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2482,7 +2549,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel25Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel25Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1082, Short.MAX_VALUE)
+                .addComponent(jTabbedPane5)
                 .addContainerGap())
         );
         jPanel25Layout.setVerticalGroup(
@@ -2558,9 +2625,32 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-        CardLayout cad = (CardLayout) konten.getLayout();
-        cad.show(konten, "kelompok");
+        
+            Kelompok k = new Kelompok();
+            try {
+                k = cm.getDataKelompok(nim);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Dosen d = new Dosen();
+            try {
+                d = cm.getDataDepe(nim);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            idKelompok = k.getIdKelompok();
+            namaKelompokMhs.setText(k.getNamaKelompok());
+            namaDosenMhs.setText(d.getNama());
+            CardLayout cad = (CardLayout) konten.getLayout();
+            cad.show(konten, "kelompok");
+            try {       
+            // TODO add your handling code here:
+            recordTemanKelompok = cm.getKelompok(idKelompok);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            isiTabelTemanKelompok();
+       
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -2570,10 +2660,18 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
-        CardLayout cad = (CardLayout) konten.getLayout();
-        cad.show(konten, "pesan");
-        this.statusAwal();
+        try {
+            // TODO add your handling code here:
+            recordMasuk = prosespesan.getAllMasuk(onUsed);
+            recordKeluar = prosespesan.getAllKeluar(onUsed);
+            isiTabelMasuk();
+            isiTabelKeluar();
+            CardLayout cad = (CardLayout) konten.getLayout();
+            cad.show(konten, "pesan");
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
@@ -2681,8 +2779,8 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        nim=userMasuk.getText();
-        nip=userMasuk.getText();
+        nim = userMasuk.getText();
+        nip = userMasuk.getText();
         if (userMasuk.getText().length() != 0 && passwordMasuk.getText().length() != 0) {
             if (posmas.periksaMasuk(userMasuk.getText(), passwordMasuk.getText(), sinyalemen) == true) {
                 peringatanMasuk.hide();
@@ -2707,8 +2805,12 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void refreshPesanMhsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshPesanMhsActionPerformed
-        // TODO add your handling code here:
-        this.statusAwal();
+        try {
+            // TODO add your handling code here:
+            this.loadPesan();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_refreshPesanMhsActionPerformed
 
     private void pesanBaruMhsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesanBaruMhsActionPerformed
@@ -2718,31 +2820,29 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void sendMailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMailActionPerformed
         // TODO add your handling code here:
-        ControllerMahasiswa cm = new ControllerMahasiswa();
         Dosen d = new Dosen();
         try {
-            d=cm.getDataPete(nim);
+            d = cm.getDataDepe(nim);
         } catch (SQLException ex) {
             Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         if (mailContent.getText().length() != 0) {
             Pesan pesan = new Pesan();
             pesan.setIsi(mailContent.getText());
-            String dosenPenerima=d.getNip();
+            String dosenPenerima = d.getNip();
             try {
                 pesan.setTgl(this.showDateNow());
                 pesan.setJam(this.showTimeNow());
-                propes.siswaKirimDosen(onUsed,dosenPenerima , pesan);
+                propes.siswaKirimDosen(onUsed, dosenPenerima, pesan);
                 mailContent.setText("");
-                this.statusAwal();
+                this.loadPesan();
                 newMail.hide();
                 newMail.dispose();
             } catch (SQLException ex) {
                 Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(mailContent, "isi pesan tidak boleh kosong");
         }
     }//GEN-LAST:event_sendMailActionPerformed
@@ -2792,7 +2892,11 @@ public class FormInduk extends javax.swing.JFrame {
                 }
             }
             bacaPsnMasukMhs.hide();
-            this.statusAwal();
+            try {
+                this.loadPesan();
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_jButton26ActionPerformed
 
@@ -2807,16 +2911,16 @@ public class FormInduk extends javax.swing.JFrame {
         // TODO add your handling code here:
         CardLayout cad = (CardLayout) kontenAd.getLayout();
         cad.show(kontenAd, "daftarAd");
-        
+
     }//GEN-LAST:event_jButton27ActionPerformed
 
     private void daftarOlehAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daftarOlehAdminActionPerformed
         // TODO add your handling code here:
-        if(namaDaftarBaru.getText().length()!=0 && idDaftarBaru.getText().length()!=0 
-                && passwordDfatarBaru.getText().length()!=0){
-            if(sinyalemenDaftar==0){
+        if (namaDaftarBaru.getText().length() != 0 && idDaftarBaru.getText().length() != 0
+                && passwordDfatarBaru.getText().length() != 0) {
+            if (sinyalemenDaftar == 0) {
                 try {
-                    Mahasiswa m =new Mahasiswa();
+                    Mahasiswa m = new Mahasiswa();
                     m.setNim(idDaftarBaru.getText());
                     m.setNama(namaDaftarBaru.getText());
                     m.setPassword(passwordDfatarBaru.getText());
@@ -2826,7 +2930,7 @@ public class FormInduk extends javax.swing.JFrame {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            if (sinyalemenDaftar==1){
+            if (sinyalemenDaftar == 1) {
                 Dosen d = new Dosen();
                 d.setNip(idDaftarBaru.getText());
                 d.setNama(namaDaftarBaru.getText());
@@ -2837,7 +2941,7 @@ public class FormInduk extends javax.swing.JFrame {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            if (sinyalemenDaftar==2){
+            if (sinyalemenDaftar == 2) {
                 Dosen d = new Dosen();
                 d.setNip(idDaftarBaru.getText());
                 d.setNama(namaDaftarBaru.getText());
@@ -2848,7 +2952,7 @@ public class FormInduk extends javax.swing.JFrame {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            if (sinyalemenDaftar==3){
+            if (sinyalemenDaftar == 3) {
                 Admin d = new Admin();
                 d.setNip(idDaftarBaru.getText());
                 d.setNama(namaDaftarBaru.getText());
@@ -2871,21 +2975,29 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_kelasDaftarBaruActionPerformed
 
     private void daftarUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daftarUserActionPerformed
-        // TODO add your handling code here:
-        CardLayout cad = (CardLayout) kontenAd.getLayout();
-        cad.show(kontenAd, "listAd");
+        try {
+            // TODO add your handling code here:
+            recordSiswa = cm.getAll();
+            recordDosen = cd.getAll();
+            isiTabeSiswa();
+            isiTabelDosen();
+            CardLayout cad = (CardLayout) kontenAd.getLayout();
+            cad.show(kontenAd, "listAd");
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_daftarUserActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        Mahasiswa m= new Mahasiswa();
+        Mahasiswa m = new Mahasiswa();
         m.setNim(editNimAdmin.getText());
         m.setNama(editNamaAdmin.getText());
         m.setKelas(editKelasAdmin.getText());
         m.setStatus(editStatusAdmin.getText());
         try {
             cm.update(m);
-            statusAwal();
+            loadPesan();
         } catch (SQLException ex) {
             Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -3017,6 +3129,8 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelan;
+    private javax.swing.JLabel jLabelan1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -3051,6 +3165,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -3078,7 +3193,9 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel menu;
     private javax.swing.JLabel namaDaftar;
     private javax.swing.JTextField namaDaftarBaru;
+    private javax.swing.JLabel namaDosenMhs;
     private javax.swing.JLabel namaDosenSurat;
+    private javax.swing.JLabel namaKelompokMhs;
     private javax.swing.JPanel navDos;
     private javax.swing.JPanel navKap;
     private javax.swing.JPanel navKap1;
@@ -3105,6 +3222,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTable tabelAdminAdmin;
     private javax.swing.JTable tabelDosenAdmin;
     private javax.swing.JTable tabelSiswaAdmin;
+    private javax.swing.JTable tabelTemanKelompok;
     private javax.swing.JLabel tgl1;
     private javax.swing.JLabel tgl2;
     private javax.swing.JLabel tgl3;
