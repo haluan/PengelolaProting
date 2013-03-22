@@ -80,7 +80,7 @@ public class prosesPesan {
         return listMasuk;
     }
 
-    public List<Pesan> getAllKeluar(String userNow) throws SQLException {
+    public List<Pesan> getAllKeluar(String userNow, String status) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
@@ -94,7 +94,12 @@ public class prosesPesan {
                 pesan.setIsi(rs.getString("isi"));
                 pesan.setTgl(rs.getString("tanggal"));
                 pesan.setJam(rs.getString("jam"));
+                if(status.equals("siswa")){
                 pesan.setPenerima(rs.getString(2));
+                }else
+                {
+                    pesan.setPenerima(rs.getString(1));
+                }
                 pesan.setIdOrang(rs.getString("nip"));
                 listKeluar.add(pesan);
             }
