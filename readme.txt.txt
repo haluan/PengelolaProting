@@ -1,0 +1,1 @@
+cd C:\Users\haluan\Documents\NetBeansProjects\PengolahanProting
