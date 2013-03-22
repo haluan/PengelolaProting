@@ -55,7 +55,7 @@ public class prosesPesan {
         return p;
     }
 
-    public List<Pesan> getAllMasuk(String userNow) throws SQLException {
+    public List<Pesan> getAllMasuk(String userNow, String status) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
@@ -63,18 +63,19 @@ public class prosesPesan {
                 + "where kepada='"+userNow+"' order by proto desc,jam desc";
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listMasuk = new ArrayList<Pesan>();
-        while (rs.next()) {
-            if (userNow.equals(rs.getString("sender"))) {
-                //aksi kosong
-            } else {
+        while (rs.next()) {            
                 Pesan pesan = new Pesan();
                 pesan.setIsi(rs.getString("isi"));
                 pesan.setTgl(rs.getString("tanggal"));
                 pesan.setJam(rs.getString("jam"));
-                pesan.setPengirim(rs.getNString(2));
+                if(status.equals("siswa")){
+                pesan.setPengirim(rs.getString(2));
+                }else
+                {
+                    pesan.setPengirim(rs.getString(1));
+                }
                 pesan.setIdOrang(rs.getString("nip"));
-                listMasuk.add(pesan);
-            }
+                listMasuk.add(pesan);            
         }
         return listMasuk;
     }

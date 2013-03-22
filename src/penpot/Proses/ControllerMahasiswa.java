@@ -70,7 +70,7 @@ public class ControllerMahasiswa {
     
     public List<Mahasiswa> getKelompok(String idkelompok) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        query = "select m.nim, m.nama, kelas,status from mahasiswa "
+        query = "select m.nim, m.nama, kelas,status, jabatan from mahasiswa "
                 + "m join kelompok using (idkelompok) where idkelompok='"+idkelompok+"'";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
@@ -80,6 +80,7 @@ public class ControllerMahasiswa {
             m.setNama(rs.getString(2));
             m.setKelas(rs.getString(3));
             m.setStatus(rs.getString(4));
+            m.setJabatan(rs.getString("jabatan"));
             listMhs.add(m);
         }
 

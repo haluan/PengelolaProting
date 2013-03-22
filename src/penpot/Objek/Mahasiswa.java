@@ -9,7 +9,16 @@ package penpot.Objek;
  * @author haluan
  */
 public class Mahasiswa {
-    private String nim,nama,password,kelas,status, idKelompok,jenisKelamin;
+    private String nim,nama,password,kelas,status, idKelompok,jenisKelamin
+            , jabatan;
+
+    public String getJabatan() {
+        return jabatan;
+    }
+
+    public void setJabatan(String jabatan) {
+        this.jabatan = jabatan;
+    }
 
     public String getJenisKelamin() {
         return jenisKelamin;

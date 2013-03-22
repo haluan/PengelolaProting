@@ -71,133 +71,20 @@ public class FormInduk extends javax.swing.JFrame {
 
     public FormInduk() {
         initComponents();
-        jMenuBar2.setUI(new WindowsMenuBarUI());
         this.peringatan1();
-        jMenuItem1.setUI(new WindowsMenuItemUI());
-        jMenuItem2.setUI(new WindowsMenuItemUI());
-        jMenuItem3.setUI(new WindowsMenuItemUI());
         this.setTitle("APPT");
-        about.setSize(400, 300);
-        about.setLocation(400, 200);
         newMail.setSize(600, 400);
         bacaPsnMasukMhs.setSize(600, 400);
         editMahasiswa.setSize(400, 300);
-
         t1.start();
-        pesanMasukSiswa.setRowHeight(20);
-        pesanKeluarSiswa.setRowHeight(20);
-
         jComboBox1.addActionListener(new combox());
         jComboBox1.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
 
         statusDaftar.addActionListener(new comboxDaftar());
         statusDaftar.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
-
-        pesanMasukSiswa.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = pesanMasukSiswa.getSelectedRow();
-                if (row != -1) {
-                    sinyalHapus = 0;
-                    Pesan pesan = recordMasuk.get(row);
-                    jLabel15.setText("dari  : ");
-                    jLabel43.setText("Dosen Pembimbing");
-                    jLabel44.setText(pesan.getTgl());
-                    jLabel45.setText(pesan.getJam());
-                    isiBukaPesan.setText(pesan.getIsi());
-                    tempPengirim = pesan.getIdOrang();//untuk dosen
-                    tempPenerima = onUsed;
-                    bacaPsnMasukMhs.show();
-
-
-                }
-            }
-        });
-
-        pesanKeluarSiswa.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = pesanKeluarSiswa.getSelectedRow();
-                if (row != -1) {
-                    sinyalHapus = 1;
-                    jLabel15.setText("ke    : ");
-                    jLabel43.setText("Dosen Pembimbing");
-                    Pesan pesan = recordKeluar.get(row);
-                    jLabel44.setText(pesan.getTgl());
-                    jLabel45.setText(pesan.getJam());
-                    isiBukaPesan.setText(pesan.getIsi());
-                    tempPengirim = onUsed;
-                    tempPenerima = pesan.getIdOrang();
-                    bacaPsnMasukMhs.show();
-                }
-            }
-        });
-
-        pesanMasukDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = pesanKeluarSiswa.getSelectedRow();
-                if (row != -1) {
-//                    isiText();
-                }
-            }
-        });
-
-        pesanKeluarDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = pesanKeluarSiswa.getSelectedRow();
-                if (row != -1) {
-//                    isiText();
-                }
-            }
-        });
-
-        tabelSiswaAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = tabelSiswaAdmin.getSelectedRow();
-                if (row != -1) {
-                    kelasMhsAdmin.setText("kelas");
-                    statusMhsAdmin.setText("status");
-                    editKelasAdmin.show();
-                    editStatusAdmin.show();
-                    Mahasiswa m = recordSiswa.get(row);
-                    editNimAdmin.setText(m.getNim());
-                    editNamaAdmin.setText(m.getNama());
-                    editKelasAdmin.setText(m.getKelas());
-                    editStatusAdmin.setText(m.getStatus());
-
-                    editMahasiswa.show();
-                }
-            }
-        });
-
-        tabelDosenAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = tabelDosenAdmin.getSelectedRow();
-                if (row != -1) {
-                    idEditUserAdmin.setText("nip");
-                    kelasMhsAdmin.setText("");
-                    statusMhsAdmin.setText("");
-                    editKelasAdmin.hide();
-                    editStatusAdmin.hide();
-                    Dosen d = recordDosen.get(row);
-                    editNimAdmin.setText(d.getNip());
-                    editNamaAdmin.setText(d.getNama());
-
-                    editMahasiswa.show();
-                }
-            }
-        });
-
-        tabelTemanKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                row = tabelTemanKelompok.getSelectedRow();
-                if (row != -1) {
-                }
-            }
-        });
     }
 
-    
-
-    void isiTabelMasuk() {
+    void isiTabelMasuk(String status) {
         Object data[][] = new Object[recordMasuk.size()][4];
         int x = 0;
         for (Pesan pes : recordMasuk) {
@@ -214,8 +101,14 @@ public class FormInduk extends javax.swing.JFrame {
             totalInMail.setText("total pesan masuk : " + x);
         }
         String judul[] = {"tanggal", "jam", "dari", "isi"};
+        if(status.equals("siswa")){
         pesanMasukSiswa.setModel(new DefaultTableModel(data, judul));
         jScrollPane2.setViewportView(pesanMasukSiswa);
+        }else{
+        pesanMasukDosen.setModel(new DefaultTableModel(data, judul));
+        jScrollPane4.setViewportView(pesanMasukDosen);
+        }
+        
     }
 
     void isiTabelKeluar() {
@@ -255,15 +148,16 @@ public class FormInduk extends javax.swing.JFrame {
 
     void isiTabelTemanKelompok() {
         int x = 0;
-        Object data[][] = new Object[recordTemanKelompok.size()][4];
+        Object data[][] = new Object[recordTemanKelompok.size()][5];
         for (Mahasiswa m : recordTemanKelompok) {
             data[x][0] = m.getNim();
             data[x][1] = m.getNama();
             data[x][2] = m.getKelas();
             data[x][3] = m.getStatus();
+            data[x][4] = m.getJabatan();
             x++;
         }
-        String judul[] = {"nim", "nama", "kelas", "status"};
+        String judul[] = {"nim", "nama", "kelas", "status", "jabatan"};
         tabelTemanKelompok.setModel(new DefaultTableModel(data, judul));
         jScrollPane10.setViewportView(tabelTemanKelompok);
     }
@@ -280,12 +174,10 @@ public class FormInduk extends javax.swing.JFrame {
         tabelDosenAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane8.setViewportView(tabelDosenAdmin);
     }
-    
-    private void loadPesan() throws SQLException{
-         recordMasuk = prosespesan.getAllMasuk(onUsed);
-            recordKeluar = prosespesan.getAllKeluar(onUsed);
-            isiTabelMasuk();
-            isiTabelKeluar();
+
+    private void loadPesan() throws SQLException {
+        recordMasuk = prosespesan.getAllMasuk(onUsed,"");
+        recordKeluar = prosespesan.getAllKeluar(onUsed);
     }
 
     private class combox implements ActionListener {
@@ -1249,7 +1141,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -2480,13 +2372,13 @@ public class FormInduk extends javax.swing.JFrame {
         tabelDosenAdmin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tabelDosenAdmin.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         jScrollPane8.setViewportView(tabelDosenAdmin);
@@ -2625,32 +2517,38 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        
-            Kelompok k = new Kelompok();
-            try {
-                k = cm.getDataKelompok(nim);
-            } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        tabelTemanKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabelTemanKelompok.getSelectedRow();
+                if (row != -1) {
+                }
             }
-            Dosen d = new Dosen();
-            try {
-                d = cm.getDataDepe(nim);
-            } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            idKelompok = k.getIdKelompok();
-            namaKelompokMhs.setText(k.getNamaKelompok());
-            namaDosenMhs.setText(d.getNama());
-            CardLayout cad = (CardLayout) konten.getLayout();
-            cad.show(konten, "kelompok");
-            try {       
+        });
+        Kelompok k = new Kelompok();
+        try {
+            k = cm.getDataKelompok(nim);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Dosen d = new Dosen();
+        try {
+            d = cm.getDataDepe(nim);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        idKelompok = k.getIdKelompok();
+        namaKelompokMhs.setText(k.getNamaKelompok());
+        namaDosenMhs.setText(d.getNama());
+        CardLayout cad = (CardLayout) konten.getLayout();
+        cad.show(konten, "kelompok");
+        try {
             // TODO add your handling code here:
             recordTemanKelompok = cm.getKelompok(idKelompok);
         } catch (SQLException ex) {
             Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
         }
-            isiTabelTemanKelompok();
-       
+        isiTabelTemanKelompok();
+
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -2660,11 +2558,47 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        pesanKeluarSiswa.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = pesanKeluarSiswa.getSelectedRow();
+                if (row != -1) {
+                    sinyalHapus = 1;
+                    jLabel15.setText("ke    : ");
+                    jLabel43.setText("Dosen Pembimbing");
+                    Pesan pesan = recordKeluar.get(row);
+                    jLabel44.setText(pesan.getTgl());
+                    jLabel45.setText(pesan.getJam());
+                    isiBukaPesan.setText(pesan.getIsi());
+                    tempPengirim = onUsed;
+                    tempPenerima = pesan.getIdOrang();
+                    bacaPsnMasukMhs.show();
+                }
+            }
+        });
+        pesanMasukSiswa.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = pesanMasukSiswa.getSelectedRow();
+                if (row != -1) {
+                    sinyalHapus = 0;
+                    Pesan pesan = recordMasuk.get(row);
+                    jLabel15.setText("dari  : ");
+                    jLabel43.setText("Dosen Pembimbing");
+                    jLabel44.setText(pesan.getTgl());
+                    jLabel45.setText(pesan.getJam());
+                    isiBukaPesan.setText(pesan.getIsi());
+                    tempPengirim = pesan.getIdOrang();//untuk dosen
+                    tempPenerima = onUsed;
+                    bacaPsnMasukMhs.show();
+
+
+                }
+            }
+        });
         try {
             // TODO add your handling code here:
-            recordMasuk = prosespesan.getAllMasuk(onUsed);
+            recordMasuk = prosespesan.getAllMasuk(onUsed,"siswa");
             recordKeluar = prosespesan.getAllKeluar(onUsed);
-            isiTabelMasuk();
+            isiTabelMasuk("siswa");
             isiTabelKeluar();
             CardLayout cad = (CardLayout) konten.getLayout();
             cad.show(konten, "pesan");
@@ -2700,6 +2634,34 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         // TODO add your handling code here:
+        pesanMasukDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = pesanKeluarSiswa.getSelectedRow();
+                if (row != -1) {
+//                    isiText();
+                }
+            }
+        });
+
+        pesanKeluarDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = pesanKeluarSiswa.getSelectedRow();
+                if (row != -1) {
+//                    isiText();
+                }
+            }
+        });
+        try {
+            // TODO add your handling code here:
+            recordMasuk = prosespesan.getAllMasuk(onUsed,"dosen");
+            recordKeluar = prosespesan.getAllKeluar(onUsed);
+            isiTabelMasuk("dosen");
+            isiTabelKeluar();
+            CardLayout cad = (CardLayout) konten.getLayout();
+            cad.show(konten, "pesan");
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
         CardLayout cad = (CardLayout) kontenDos.getLayout();
         cad.show(kontenDos, "pesan");
     }//GEN-LAST:event_jButton14ActionPerformed
@@ -2767,7 +2729,9 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton24ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:        
+        about.setSize(400, 300);
+        about.setLocation(400, 200);
         about.show();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
@@ -2975,6 +2939,41 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_kelasDaftarBaruActionPerformed
 
     private void daftarUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daftarUserActionPerformed
+        tabelSiswaAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabelSiswaAdmin.getSelectedRow();
+                if (row != -1) {
+                    kelasMhsAdmin.setText("kelas");
+                    statusMhsAdmin.setText("status");
+                    editKelasAdmin.show();
+                    editStatusAdmin.show();
+                    Mahasiswa m = recordSiswa.get(row);
+                    editNimAdmin.setText(m.getNim());
+                    editNamaAdmin.setText(m.getNama());
+                    editKelasAdmin.setText(m.getKelas());
+                    editStatusAdmin.setText(m.getStatus());
+
+                    editMahasiswa.show();
+                }
+            }
+        });
+        tabelDosenAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabelDosenAdmin.getSelectedRow();
+                if (row != -1) {
+                    idEditUserAdmin.setText("nip");
+                    kelasMhsAdmin.setText("");
+                    statusMhsAdmin.setText("");
+                    editKelasAdmin.hide();
+                    editStatusAdmin.hide();
+                    Dosen d = recordDosen.get(row);
+                    editNimAdmin.setText(d.getNip());
+                    editNamaAdmin.setText(d.getNama());
+
+                    editMahasiswa.show();
+                }
+            }
+        });
         try {
             // TODO add your handling code here:
             recordSiswa = cm.getAll();
