@@ -27,9 +27,11 @@ import penpot.Objek.Dosen;
 import penpot.Objek.Kelompok;
 import penpot.Objek.Mahasiswa;
 import penpot.Objek.Pesan;
+import penpot.Objek.Proyek;
 import penpot.Proses.ControllerAdmin;
 import penpot.Proses.ControllerDosen;
 import penpot.Proses.ControllerMahasiswa;
+import penpot.Proses.ControllerProyek;
 import penpot.Proses.kelolaBaru;
 import penpot.Proses.prosesMasuk;
 import penpot.Proses.prosesPesan;
@@ -55,11 +57,13 @@ public class FormInduk extends javax.swing.JFrame {
     private List<Mahasiswa> recordSiswa = new ArrayList<Mahasiswa>();
     private List<Dosen> recordDosen = new ArrayList<>();
     private List<Mahasiswa> recordTemanKelompok = new ArrayList<>();
+    private List<Proyek> recordProyek = new ArrayList<>();
     //Instansiasi Controller
     private ControllerMahasiswa cm = new ControllerMahasiswa();
     private ControllerDosen cd = new ControllerDosen();
     private ControllerAdmin ca = new ControllerAdmin();
     private prosesPesan prosespesan = new prosesPesan();
+    private ControllerProyek cp = new ControllerProyek();
     //variabel tambahan
     private int row;
     private static int seen;
@@ -149,6 +153,21 @@ public class FormInduk extends javax.swing.JFrame {
         String judul[] = {"nim", "nama", "kelas", "status"};
         tabelSiswaAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane7.setViewportView(tabelSiswaAdmin);
+    }
+
+    void isiTabelProyek() {
+        int x = 0;
+        Object data[][] = new Object[recordProyek.size()][4];
+        for (Proyek p : recordProyek) {
+            data[x][0] = p.getJudul();
+            data[x][1] = p.getTingkat();
+            data[x][2] = p.getTahunAkademik();
+            data[x][3] = p.getNama();
+            x++;
+        }
+        String judul[] = {"judul", "tingkat", "tahun akademik", "dosen pembimbing"};
+        tabelSiapSetuju.setModel(new DefaultTableModel(data, judul));
+        jScrollPane12.setViewportView(tabelSiapSetuju);
     }
 
     void isiTabelTemanKelompok() {
@@ -264,6 +283,13 @@ public class FormInduk extends javax.swing.JFrame {
     public String showDateNow() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyy");
+        String hasil = sdf.format(cal.getTime());
+        return hasil;
+    }
+
+    public String showyearNow() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyy");
         String hasil = sdf.format(cal.getTime());
         return hasil;
     }
@@ -458,10 +484,19 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel13 = new javax.swing.JPanel();
-        jLabel37 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jLabel38 = new javax.swing.JLabel();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        ajukanJudul = new javax.swing.JTextField();
+        ajukanJumlahKlpk = new javax.swing.JTextField();
+        ajukanTingkat = new javax.swing.JComboBox();
+        ajukanProyek = new javax.swing.JButton();
+        batalAjukanProyek = new javax.swing.JButton();
+        jLabel37 = new javax.swing.JLabel();
+        ajukanIdPro = new javax.swing.JTextField();
         kaprodi = new javax.swing.JPanel();
         navKap = new javax.swing.JPanel();
         jButton17 = new javax.swing.JButton();
@@ -470,10 +505,14 @@ public class FormInduk extends javax.swing.JFrame {
         tgl3 = new javax.swing.JLabel();
         waktu3 = new javax.swing.JLabel();
         kontenKap = new javax.swing.JPanel();
+        jPanel30 = new javax.swing.JPanel();
+        jLabel40 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel26 = new javax.swing.JLabel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel17 = new javax.swing.JPanel();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        tabelSiapSetuju = new javax.swing.JTable();
         jPanel18 = new javax.swing.JPanel();
         jTabbedPane4 = new javax.swing.JTabbedPane();
         jPanel19 = new javax.swing.JPanel();
@@ -1126,7 +1165,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton6.setBorderPainted(false);
         jButton6.setContentAreaFilled(false);
         jButton6.setName(""); // NOI18N
-        jButton6.setOpaque(false);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -1140,7 +1178,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton7.setBorderPainted(false);
         jButton7.setContentAreaFilled(false);
         jButton7.setName(""); // NOI18N
-        jButton7.setOpaque(false);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
@@ -1154,7 +1191,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton8.setBorderPainted(false);
         jButton8.setContentAreaFilled(false);
         jButton8.setName(""); // NOI18N
-        jButton8.setOpaque(false);
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
@@ -1168,7 +1204,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton9.setBorderPainted(false);
         jButton9.setContentAreaFilled(false);
         jButton9.setName(""); // NOI18N
-        jButton9.setOpaque(false);
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
@@ -1182,7 +1217,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton10.setBorderPainted(false);
         jButton10.setContentAreaFilled(false);
         jButton10.setName(""); // NOI18N
-        jButton10.setOpaque(false);
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
@@ -1196,7 +1230,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton11.setBorderPainted(false);
         jButton11.setContentAreaFilled(false);
         jButton11.setName(""); // NOI18N
-        jButton11.setOpaque(false);
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton11ActionPerformed(evt);
@@ -1218,7 +1251,6 @@ public class FormInduk extends javax.swing.JFrame {
         jButton25.setBorderPainted(false);
         jButton25.setContentAreaFilled(false);
         jButton25.setName(""); // NOI18N
-        jButton25.setOpaque(false);
         jButton25.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton25ActionPerformed(evt);
@@ -1914,26 +1946,7 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel21.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel21.setText("PROYEK");
 
-        jLabel37.setText("mengajukan judul ke kaprodi");
-
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jLabel37)
-                .addContainerGap(841, Short.MAX_VALUE))
-        );
-        jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel37)
-                .addContainerGap(488, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("mengajukan", jPanel13);
+        jTabbedPane1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jLabel38.setText("melihat progres kelompok binaan");
 
@@ -1951,10 +1964,96 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(jLabel38)
-                .addContainerGap(487, Short.MAX_VALUE))
+                .addContainerGap(484, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("progres binaan", jPanel14);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel5.setText("judul");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel8.setText("tingkat");
+
+        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel14.setText("jumlah");
+
+        ajukanTingkat.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ajukanTingkat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        ajukanProyek.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ajukanProyek.setText("ajukan");
+        ajukanProyek.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ajukanProyekActionPerformed(evt);
+            }
+        });
+
+        batalAjukanProyek.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        batalAjukanProyek.setText("batal");
+        batalAjukanProyek.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                batalAjukanProyekActionPerformed(evt);
+            }
+        });
+
+        jLabel37.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel37.setText("id");
+
+        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
+        jPanel13.setLayout(jPanel13Layout);
+        jPanel13Layout.setHorizontalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addGap(383, 383, 383)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel14)
+                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel8)
+                                .addComponent(jLabel5)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ajukanTingkat, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(batalAjukanProyek)
+                                .addComponent(ajukanJudul, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(ajukanJumlahKlpk, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(ajukanIdPro, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(ajukanProyek))
+                    .addComponent(jLabel37))
+                .addContainerGap(381, Short.MAX_VALUE))
+        );
+        jPanel13Layout.setVerticalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addGap(117, 117, 117)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel37)
+                    .addComponent(ajukanIdPro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(ajukanJudul, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(ajukanTingkat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(ajukanJumlahKlpk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ajukanProyek)
+                    .addComponent(batalAjukanProyek))
+                .addContainerGap(200, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("mengajukan", jPanel13);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -2083,20 +2182,61 @@ public class FormInduk extends javax.swing.JFrame {
 
         kontenKap.setLayout(new java.awt.CardLayout());
 
+        jLabel40.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        jLabel40.setText("SELAMAT DATANG KAPRODI");
+
+        javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
+        jPanel30.setLayout(jPanel30Layout);
+        jPanel30Layout.setHorizontalGroup(
+            jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel30Layout.createSequentialGroup()
+                .addContainerGap(374, Short.MAX_VALUE)
+                .addComponent(jLabel40)
+                .addGap(288, 288, 288))
+        );
+        jPanel30Layout.setVerticalGroup(
+            jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel30Layout.createSequentialGroup()
+                .addGap(214, 214, 214)
+                .addComponent(jLabel40)
+                .addContainerGap(374, Short.MAX_VALUE))
+        );
+
+        kontenKap.add(jPanel30, "card4");
+
         jLabel26.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel26.setText("PROYEK");
 
         jTabbedPane3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        tabelSiapSetuju.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane12.setViewportView(tabelSiapSetuju);
+
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1012, Short.MAX_VALUE)
+            .addGroup(jPanel17Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 992, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 503, Short.MAX_VALUE)
+            .addGroup(jPanel17Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane3.addTab("menyetujui", jPanel17);
@@ -2169,7 +2309,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jLabel26)
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 534, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         kontenKap.add(jPanel7, "proyekKap");
@@ -2190,7 +2330,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addComponent(jLabel27)
-                .addGap(0, 574, Short.MAX_VALUE))
+                .addGap(0, 604, Short.MAX_VALUE))
         );
 
         kontenKap.add(jPanel8, "setelanKap");
@@ -2214,7 +2354,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(navKap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(kaprodiLayout.createSequentialGroup()
                         .addComponent(kontenKap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 32, Short.MAX_VALUE)))
+                        .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -2806,6 +2946,9 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // TODO add your handling code here:
+        ajukanTingkat.removeAllItems();
+        ajukanTingkat.setModel(new DefaultComboBoxModel(new String[]{"I", "II"}));
+        System.out.println("" + ajukanTingkat.getSelectedItem().toString());
         CardLayout cad = (CardLayout) kontenDos.getLayout();
         cad.show(kontenDos, "proyekDos");
     }//GEN-LAST:event_jButton12ActionPerformed
@@ -2911,6 +3054,31 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
         // TODO add your handling code here:
+
+        tabelSiapSetuju.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabelSiapSetuju.getSelectedRow();
+                if (row != -1) {
+//                    isiText();
+//                    sinyalHapus = 1;
+//                    jLabel15.setText("ke    : ");
+//                    jLabel43.setText("siswa");
+//                    Pesan pesan = recordKeluar.get(row);
+//                    jLabel44.setText(pesan.getTgl());
+//                    jLabel45.setText(pesan.getJam());
+//                    isiBukaPesan.setText(pesan.getIsi());
+//                    tempPengirim = onUsed;
+//                    tempPenerima = pesan.getIdOrang();
+//                    bacaPsnMasukMhs.show();
+                }
+            }
+        });
+        try {
+            recordProyek = cp.getAll();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        isiTabelProyek();
         CardLayout cad = (CardLayout) kontenKap.getLayout();
         cad.show(kontenKap, "proyekKap");
     }//GEN-LAST:event_jButton17ActionPerformed
@@ -3283,6 +3451,32 @@ public class FormInduk extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton28ActionPerformed
 
+    private void batalAjukanProyekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batalAjukanProyekActionPerformed
+        // TODO add your handling code here:
+        ajukanJudul.setText("");
+        ajukanIdPro.setText("");
+        ajukanJumlahKlpk.setText("");
+    }//GEN-LAST:event_batalAjukanProyekActionPerformed
+
+    private void ajukanProyekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajukanProyekActionPerformed
+        // TODO add your handling code here:
+        Proyek p = new Proyek();
+        p.setIdPro(ajukanIdPro.getText());
+        p.setJudul(ajukanJudul.getText());
+        p.setTingkat(ajukanTingkat.getSelectedItem().toString());
+        p.setTahunAkademik(showyearNow());
+        p.setNip(nip);
+        ControllerProyek cp = new ControllerProyek();
+        try {
+            cp.insert(p);
+            ajukanJudul.setText("");
+            ajukanIdPro.setText("");
+            ajukanJumlahKlpk.setText("");
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ajukanProyekActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -3320,7 +3514,13 @@ public class FormInduk extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame about;
     private javax.swing.JPanel admin;
+    private javax.swing.JTextField ajukanIdPro;
+    private javax.swing.JTextField ajukanJudul;
+    private javax.swing.JTextField ajukanJumlahKlpk;
+    private javax.swing.JButton ajukanProyek;
+    private javax.swing.JComboBox ajukanTingkat;
     private javax.swing.JFrame bacaPsnMasukMhs;
+    private javax.swing.JButton batalAjukanProyek;
     private javax.swing.JButton cancelMail;
     private javax.swing.JButton cancelMail1;
     private javax.swing.JComboBox daftarBinaanDosen;
@@ -3376,6 +3576,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
@@ -3404,13 +3605,16 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel45;
     private javax.swing.JLabel jLabel46;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelan;
     private javax.swing.JLabel jLabelan1;
@@ -3441,6 +3645,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -3450,6 +3655,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -3508,6 +3714,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTabbedPane tabMailMhs;
     private javax.swing.JTable tabelAdminAdmin;
     private javax.swing.JTable tabelDosenAdmin;
+    private javax.swing.JTable tabelSiapSetuju;
     private javax.swing.JTable tabelSiswaAdmin;
     private javax.swing.JTable tabelTemanKelompok;
     private javax.swing.JLabel tgl1;

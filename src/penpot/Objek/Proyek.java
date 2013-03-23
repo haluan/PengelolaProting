@@ -8,9 +8,34 @@ package penpot.Objek;
  *
  * @author haluan
  */
-public class Proyek {
-    private String idPro, judul, nip, tahunAkademik;
+public class Proyek extends Dosen{
+    private String idPro, judul, nip, tahunAkademik, tingkat;
 
+    public String getTingkat() {
+        return tingkat;
+    }
+
+    public void setTingkat(String tingkat) {
+        this.tingkat = tingkat;
+    }
+    
+    
+
+    public String getNip() {
+        return nip;
+    }
+
+    public void setNip(String nip) {
+        this.nip = nip;
+    }
+
+    public String getTahunAkademik() {
+        return tahunAkademik;
+    }
+
+    public void setTahunAkademik(String tahunAkademik) {
+        this.tahunAkademik = tahunAkademik;
+    }
     public String getIdPro() {
         return idPro;
     }
