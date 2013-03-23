@@ -940,8 +940,10 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel1.setText("masuk");
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(204, 204, 255));
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/login.png"))); // NOI18N
         jButton1.setText("masuk");
+        jButton1.setContentAreaFilled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -949,8 +951,10 @@ public class FormInduk extends javax.swing.JFrame {
         });
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(204, 204, 255));
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/3.png"))); // NOI18N
         jButton2.setText("batal");
+        jButton2.setContentAreaFilled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -1115,12 +1119,12 @@ public class FormInduk extends javax.swing.JFrame {
 
         navigasi.setBackground(new java.awt.Color(51, 51, 255));
 
-        jButton6.setBackground(new java.awt.Color(51, 51, 255));
         jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/task_completed.png"))); // NOI18N
         jButton6.setText("data akademik");
         jButton6.setBorderPainted(false);
+        jButton6.setContentAreaFilled(false);
         jButton6.setName(""); // NOI18N
         jButton6.setOpaque(false);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -1129,12 +1133,12 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        jButton7.setBackground(new java.awt.Color(51, 51, 255));
         jButton7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton7.setText("proyek");
         jButton7.setBorderPainted(false);
+        jButton7.setContentAreaFilled(false);
         jButton7.setName(""); // NOI18N
         jButton7.setOpaque(false);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -1143,12 +1147,12 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        jButton8.setBackground(new java.awt.Color(51, 51, 255));
         jButton8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton8.setForeground(new java.awt.Color(255, 255, 255));
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363865588_config-users.png"))); // NOI18N
         jButton8.setText("kelompok");
         jButton8.setBorderPainted(false);
+        jButton8.setContentAreaFilled(false);
         jButton8.setName(""); // NOI18N
         jButton8.setOpaque(false);
         jButton8.addActionListener(new java.awt.event.ActionListener() {
@@ -1157,12 +1161,12 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        jButton9.setBackground(new java.awt.Color(51, 51, 255));
         jButton9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton9.setForeground(new java.awt.Color(255, 255, 255));
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/load_upload.png"))); // NOI18N
         jButton9.setText("upload");
         jButton9.setBorderPainted(false);
+        jButton9.setContentAreaFilled(false);
         jButton9.setName(""); // NOI18N
         jButton9.setOpaque(false);
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -1171,12 +1175,12 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        jButton10.setBackground(new java.awt.Color(51, 51, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton10.setForeground(new java.awt.Color(255, 255, 255));
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/indicator-messages-new.png"))); // NOI18N
         jButton10.setText("pesan");
         jButton10.setBorderPainted(false);
+        jButton10.setContentAreaFilled(false);
         jButton10.setName(""); // NOI18N
         jButton10.setOpaque(false);
         jButton10.addActionListener(new java.awt.event.ActionListener() {
@@ -1185,12 +1189,12 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        jButton11.setBackground(new java.awt.Color(51, 51, 255));
         jButton11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton11.setForeground(new java.awt.Color(255, 255, 255));
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton11.setText("keluar");
         jButton11.setBorderPainted(false);
+        jButton11.setContentAreaFilled(false);
         jButton11.setName(""); // NOI18N
         jButton11.setOpaque(false);
         jButton11.addActionListener(new java.awt.event.ActionListener() {
@@ -1207,12 +1211,12 @@ public class FormInduk extends javax.swing.JFrame {
         waktu1.setForeground(new java.awt.Color(255, 255, 255));
         waktu1.setText("jLabel3");
 
-        jButton25.setBackground(new java.awt.Color(51, 51, 255));
         jButton25.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton25.setForeground(new java.awt.Color(255, 255, 255));
         jButton25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton25.setText("setelan");
         jButton25.setBorderPainted(false);
+        jButton25.setContentAreaFilled(false);
         jButton25.setName(""); // NOI18N
         jButton25.setOpaque(false);
         jButton25.addActionListener(new java.awt.event.ActionListener() {
@@ -1273,6 +1277,7 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel9.setText("DATA AKADEMIK");
 
         statistikNilaiMhs.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        statistikNilaiMhs.setForeground(new java.awt.Color(0, 0, 204));
         statistikNilaiMhs.setText("statistik nilai");
         statistikNilaiMhs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1603,66 +1608,66 @@ public class FormInduk extends javax.swing.JFrame {
 
         navDos.setBackground(new java.awt.Color(51, 51, 255));
 
-        jButton12.setBackground(new java.awt.Color(51, 51, 255));
         jButton12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton12.setForeground(new java.awt.Color(255, 255, 255));
         jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton12.setText("proyek");
+        jButton12.setContentAreaFilled(false);
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
             }
         });
 
-        jButton13.setBackground(new java.awt.Color(51, 51, 255));
         jButton13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton13.setForeground(new java.awt.Color(255, 255, 255));
         jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/tutorials.png"))); // NOI18N
         jButton13.setText("bimbingan");
+        jButton13.setContentAreaFilled(false);
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton13ActionPerformed(evt);
             }
         });
 
-        jButton14.setBackground(new java.awt.Color(51, 51, 255));
         jButton14.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton14.setForeground(new java.awt.Color(255, 255, 255));
         jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/indicator-messages-new.png"))); // NOI18N
         jButton14.setText("pesan");
+        jButton14.setContentAreaFilled(false);
         jButton14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton14ActionPerformed(evt);
             }
         });
 
-        jButton15.setBackground(new java.awt.Color(51, 51, 255));
         jButton15.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton15.setForeground(new java.awt.Color(255, 255, 255));
         jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/notes.png"))); // NOI18N
         jButton15.setText("penilaian");
+        jButton15.setContentAreaFilled(false);
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton15ActionPerformed(evt);
             }
         });
 
-        jButton16.setBackground(new java.awt.Color(51, 51, 255));
         jButton16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton16.setForeground(new java.awt.Color(255, 255, 255));
         jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton16.setText("setelan");
+        jButton16.setContentAreaFilled(false);
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton16ActionPerformed(evt);
             }
         });
 
-        jButton18.setBackground(new java.awt.Color(51, 51, 255));
         jButton18.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton18.setForeground(new java.awt.Color(255, 255, 255));
         jButton18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton18.setText("keluar");
+        jButton18.setContentAreaFilled(false);
         jButton18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton18ActionPerformed(evt);
@@ -1812,6 +1817,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         jButton5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton5.setText("new");
+        jButton5.setContentAreaFilled(false);
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -1820,6 +1826,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         jButton28.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton28.setText("refresh");
+        jButton28.setContentAreaFilled(false);
         jButton28.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton28ActionPerformed(evt);
@@ -1838,8 +1845,8 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap(57, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
                         .addComponent(jButton28))
                     .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1006, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(49, 49, 49))
@@ -2000,32 +2007,31 @@ public class FormInduk extends javax.swing.JFrame {
 
         navKap.setBackground(new java.awt.Color(51, 51, 255));
 
-        jButton17.setBackground(new java.awt.Color(51, 51, 255));
         jButton17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton17.setForeground(new java.awt.Color(255, 255, 255));
         jButton17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton17.setText("proyek");
+        jButton17.setContentAreaFilled(false);
         jButton17.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton17ActionPerformed(evt);
             }
         });
 
-        jButton19.setBackground(new java.awt.Color(51, 51, 255));
         jButton19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton19.setForeground(new java.awt.Color(255, 255, 255));
         jButton19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton19.setText("setelan");
+        jButton19.setContentAreaFilled(false);
         jButton19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton19ActionPerformed(evt);
             }
         });
 
-        jButton20.setBackground(new java.awt.Color(51, 51, 255));
-        jButton20.setForeground(new java.awt.Color(255, 255, 255));
         jButton20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton20.setText("keluar");
+        jButton20.setContentAreaFilled(false);
         jButton20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton20ActionPerformed(evt);
@@ -2216,44 +2222,44 @@ public class FormInduk extends javax.swing.JFrame {
 
         navKap1.setBackground(new java.awt.Color(51, 51, 255));
 
-        jButton21.setBackground(new java.awt.Color(51, 51, 255));
         jButton21.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton21.setForeground(new java.awt.Color(255, 255, 255));
+        jButton21.setForeground(new java.awt.Color(204, 204, 255));
         jButton21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton21.setText("proyek");
+        jButton21.setContentAreaFilled(false);
         jButton21.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton21ActionPerformed(evt);
             }
         });
 
-        jButton22.setBackground(new java.awt.Color(51, 51, 255));
         jButton22.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton22.setForeground(new java.awt.Color(255, 255, 255));
+        jButton22.setForeground(new java.awt.Color(204, 204, 255));
         jButton22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton22.setText("setelan");
+        jButton22.setContentAreaFilled(false);
         jButton22.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton22ActionPerformed(evt);
             }
         });
 
-        jButton23.setBackground(new java.awt.Color(51, 51, 255));
         jButton23.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton23.setForeground(new java.awt.Color(255, 255, 255));
+        jButton23.setForeground(new java.awt.Color(204, 204, 255));
         jButton23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton23.setText("keluar");
+        jButton23.setContentAreaFilled(false);
         jButton23.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton23ActionPerformed(evt);
             }
         });
 
-        jButton24.setBackground(new java.awt.Color(51, 51, 255));
         jButton24.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton24.setForeground(new java.awt.Color(255, 255, 255));
+        jButton24.setForeground(new java.awt.Color(204, 204, 255));
         jButton24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/notes.png"))); // NOI18N
         jButton24.setText("dokumen");
+        jButton24.setContentAreaFilled(false);
         jButton24.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton24ActionPerformed(evt);
@@ -2268,11 +2274,11 @@ public class FormInduk extends javax.swing.JFrame {
         waktu4.setForeground(new java.awt.Color(255, 255, 255));
         waktu4.setText("jLabel3");
 
-        jButton27.setBackground(new java.awt.Color(51, 51, 255));
         jButton27.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton27.setForeground(new java.awt.Color(255, 255, 255));
+        jButton27.setForeground(new java.awt.Color(204, 204, 255));
         jButton27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363852247_user-group-new.png"))); // NOI18N
         jButton27.setText("tambah pengguna");
+        jButton27.setContentAreaFilled(false);
         jButton27.setPreferredSize(new java.awt.Dimension(75, 23));
         jButton27.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2280,11 +2286,11 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
-        daftarUser.setBackground(new java.awt.Color(51, 51, 255));
         daftarUser.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        daftarUser.setForeground(new java.awt.Color(255, 255, 255));
+        daftarUser.setForeground(new java.awt.Color(204, 204, 255));
         daftarUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363865588_config-users.png"))); // NOI18N
         daftarUser.setText("daftar pengguna");
+        daftarUser.setContentAreaFilled(false);
         daftarUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 daftarUserActionPerformed(evt);
