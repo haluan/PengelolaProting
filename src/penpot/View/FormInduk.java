@@ -1113,12 +1113,16 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(masuk, "masuk");
 
-        navigasi.setBackground(new java.awt.Color(102, 102, 255));
+        navigasi.setBackground(new java.awt.Color(51, 51, 255));
 
         jButton6.setBackground(new java.awt.Color(51, 51, 255));
         jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton6.setForeground(new java.awt.Color(255, 255, 255));
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/task_completed.png"))); // NOI18N
         jButton6.setText("data akademik");
+        jButton6.setBorderPainted(false);
+        jButton6.setName(""); // NOI18N
+        jButton6.setOpaque(false);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -1127,44 +1131,68 @@ public class FormInduk extends javax.swing.JFrame {
 
         jButton7.setBackground(new java.awt.Color(51, 51, 255));
         jButton7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton7.setText("proyek");
+        jButton7.setBorderPainted(false);
+        jButton7.setName(""); // NOI18N
+        jButton7.setOpaque(false);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
             }
         });
 
+        jButton8.setBackground(new java.awt.Color(51, 51, 255));
         jButton8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton8.setForeground(new java.awt.Color(255, 255, 255));
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363865588_config-users.png"))); // NOI18N
         jButton8.setText("kelompok");
+        jButton8.setBorderPainted(false);
+        jButton8.setName(""); // NOI18N
+        jButton8.setOpaque(false);
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
             }
         });
 
+        jButton9.setBackground(new java.awt.Color(51, 51, 255));
         jButton9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton9.setForeground(new java.awt.Color(255, 255, 255));
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/load_upload.png"))); // NOI18N
         jButton9.setText("upload");
+        jButton9.setBorderPainted(false);
+        jButton9.setName(""); // NOI18N
+        jButton9.setOpaque(false);
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
             }
         });
 
+        jButton10.setBackground(new java.awt.Color(51, 51, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton10.setForeground(new java.awt.Color(255, 255, 255));
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/indicator-messages-new.png"))); // NOI18N
         jButton10.setText("pesan");
+        jButton10.setBorderPainted(false);
+        jButton10.setName(""); // NOI18N
+        jButton10.setOpaque(false);
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
             }
         });
 
+        jButton11.setBackground(new java.awt.Color(51, 51, 255));
         jButton11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton11.setForeground(new java.awt.Color(255, 255, 255));
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton11.setText("keluar");
+        jButton11.setBorderPainted(false);
+        jButton11.setName(""); // NOI18N
+        jButton11.setOpaque(false);
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton11ActionPerformed(evt);
@@ -1179,9 +1207,14 @@ public class FormInduk extends javax.swing.JFrame {
         waktu1.setForeground(new java.awt.Color(255, 255, 255));
         waktu1.setText("jLabel3");
 
+        jButton25.setBackground(new java.awt.Color(51, 51, 255));
         jButton25.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton25.setForeground(new java.awt.Color(255, 255, 255));
         jButton25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton25.setText("setelan");
+        jButton25.setBorderPainted(false);
+        jButton25.setName(""); // NOI18N
+        jButton25.setOpaque(false);
         jButton25.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton25ActionPerformed(evt);
@@ -1216,20 +1249,20 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(tgl1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(waktu1)
-                .addGap(42, 42, 42)
+                .addGap(30, 30, 30)
                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
+                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -1268,7 +1301,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addGap(18, 18, 18)
                 .addComponent(statistikNilaiMhs)
-                .addContainerGap(500, Short.MAX_VALUE))
+                .addContainerGap(538, Short.MAX_VALUE))
         );
 
         konten.add(nilai, "nilai");
@@ -1289,7 +1322,7 @@ public class FormInduk extends javax.swing.JFrame {
             projekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(projekLayout.createSequentialGroup()
                 .addComponent(jLabel10)
-                .addGap(0, 554, Short.MAX_VALUE))
+                .addGap(0, 592, Short.MAX_VALUE))
         );
 
         konten.add(projek, "projek");
@@ -1358,7 +1391,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(namaKelompokMhs))
                 .addGap(77, 77, 77)
                 .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 286, Short.MAX_VALUE))
+                .addGap(0, 324, Short.MAX_VALUE))
         );
 
         konten.add(kelompok, "kelompok");
@@ -1380,7 +1413,7 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(uploadLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel12)
-                .addContainerGap(543, Short.MAX_VALUE))
+                .addContainerGap(581, Short.MAX_VALUE))
         );
 
         konten.add(upload, "upload");
@@ -1423,7 +1456,7 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
                 .addComponent(totalInMail)
                 .addGap(24, 24, 24))
         );
@@ -1461,14 +1494,14 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel22Layout.setVerticalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
-                .addContainerGap(393, Short.MAX_VALUE)
+                .addContainerGap(425, Short.MAX_VALUE)
                 .addComponent(totalOutMail)
                 .addGap(21, 21, 21))
             .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel22Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(42, Short.MAX_VALUE)))
+                    .addContainerGap(74, Short.MAX_VALUE)))
         );
 
         tabMailMhs.addTab("keluar", jPanel22);
@@ -1519,7 +1552,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(pesanBaruMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(refreshPesanMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(tabMailMhs, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
+                .addComponent(tabMailMhs))
         );
 
         konten.add(pesan, "pesan");
@@ -1541,7 +1574,7 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(setelanMhsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel41)
-                .addContainerGap(543, Short.MAX_VALUE))
+                .addContainerGap(581, Short.MAX_VALUE))
         );
 
         konten.add(setelanMhs, "setelanMhs");
@@ -1562,15 +1595,17 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(navigasi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         induk.add(menu, "menu");
 
-        navDos.setBackground(new java.awt.Color(102, 102, 255));
+        navDos.setBackground(new java.awt.Color(51, 51, 255));
 
+        jButton12.setBackground(new java.awt.Color(51, 51, 255));
         jButton12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton12.setForeground(new java.awt.Color(255, 255, 255));
         jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton12.setText("proyek");
         jButton12.addActionListener(new java.awt.event.ActionListener() {
@@ -1579,7 +1614,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton13.setBackground(new java.awt.Color(51, 51, 255));
         jButton13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton13.setForeground(new java.awt.Color(255, 255, 255));
         jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/tutorials.png"))); // NOI18N
         jButton13.setText("bimbingan");
         jButton13.addActionListener(new java.awt.event.ActionListener() {
@@ -1588,7 +1625,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton14.setBackground(new java.awt.Color(51, 51, 255));
         jButton14.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton14.setForeground(new java.awt.Color(255, 255, 255));
         jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/indicator-messages-new.png"))); // NOI18N
         jButton14.setText("pesan");
         jButton14.addActionListener(new java.awt.event.ActionListener() {
@@ -1597,7 +1636,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton15.setBackground(new java.awt.Color(51, 51, 255));
         jButton15.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton15.setForeground(new java.awt.Color(255, 255, 255));
         jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/notes.png"))); // NOI18N
         jButton15.setText("penilaian");
         jButton15.addActionListener(new java.awt.event.ActionListener() {
@@ -1606,7 +1647,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton16.setBackground(new java.awt.Color(51, 51, 255));
         jButton16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton16.setForeground(new java.awt.Color(255, 255, 255));
         jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton16.setText("setelan");
         jButton16.addActionListener(new java.awt.event.ActionListener() {
@@ -1615,7 +1658,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton18.setBackground(new java.awt.Color(51, 51, 255));
         jButton18.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton18.setForeground(new java.awt.Color(255, 255, 255));
         jButton18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton18.setText("keluar");
         jButton18.addActionListener(new java.awt.event.ActionListener() {
@@ -1953,9 +1998,11 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(dosen, "dosen");
 
-        navKap.setBackground(new java.awt.Color(102, 102, 255));
+        navKap.setBackground(new java.awt.Color(51, 51, 255));
 
+        jButton17.setBackground(new java.awt.Color(51, 51, 255));
         jButton17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton17.setForeground(new java.awt.Color(255, 255, 255));
         jButton17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton17.setText("proyek");
         jButton17.addActionListener(new java.awt.event.ActionListener() {
@@ -1964,7 +2011,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton19.setBackground(new java.awt.Color(51, 51, 255));
         jButton19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton19.setForeground(new java.awt.Color(255, 255, 255));
         jButton19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton19.setText("setelan");
         jButton19.addActionListener(new java.awt.event.ActionListener() {
@@ -1973,6 +2022,8 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton20.setBackground(new java.awt.Color(51, 51, 255));
+        jButton20.setForeground(new java.awt.Color(255, 255, 255));
         jButton20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton20.setText("keluar");
         jButton20.addActionListener(new java.awt.event.ActionListener() {
@@ -2144,8 +2195,8 @@ public class FormInduk extends javax.swing.JFrame {
             kaprodiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(kaprodiLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(navKap, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addComponent(navKap, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
                 .addComponent(kontenKap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -2163,9 +2214,11 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(kaprodi, "kaprodi");
 
-        navKap1.setBackground(new java.awt.Color(102, 102, 255));
+        navKap1.setBackground(new java.awt.Color(51, 51, 255));
 
+        jButton21.setBackground(new java.awt.Color(51, 51, 255));
         jButton21.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton21.setForeground(new java.awt.Color(255, 255, 255));
         jButton21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/project-plan.png"))); // NOI18N
         jButton21.setText("proyek");
         jButton21.addActionListener(new java.awt.event.ActionListener() {
@@ -2174,7 +2227,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton22.setBackground(new java.awt.Color(51, 51, 255));
         jButton22.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton22.setForeground(new java.awt.Color(255, 255, 255));
         jButton22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/configuration 1.png"))); // NOI18N
         jButton22.setText("setelan");
         jButton22.addActionListener(new java.awt.event.ActionListener() {
@@ -2183,7 +2238,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton23.setBackground(new java.awt.Color(51, 51, 255));
         jButton23.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton23.setForeground(new java.awt.Color(255, 255, 255));
         jButton23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/keluar.png"))); // NOI18N
         jButton23.setText("keluar");
         jButton23.addActionListener(new java.awt.event.ActionListener() {
@@ -2192,7 +2249,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        jButton24.setBackground(new java.awt.Color(51, 51, 255));
         jButton24.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton24.setForeground(new java.awt.Color(255, 255, 255));
         jButton24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/notes.png"))); // NOI18N
         jButton24.setText("dokumen");
         jButton24.addActionListener(new java.awt.event.ActionListener() {
@@ -2209,7 +2268,9 @@ public class FormInduk extends javax.swing.JFrame {
         waktu4.setForeground(new java.awt.Color(255, 255, 255));
         waktu4.setText("jLabel3");
 
+        jButton27.setBackground(new java.awt.Color(51, 51, 255));
         jButton27.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton27.setForeground(new java.awt.Color(255, 255, 255));
         jButton27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363852247_user-group-new.png"))); // NOI18N
         jButton27.setText("tambah pengguna");
         jButton27.setPreferredSize(new java.awt.Dimension(75, 23));
@@ -2219,7 +2280,9 @@ public class FormInduk extends javax.swing.JFrame {
             }
         });
 
+        daftarUser.setBackground(new java.awt.Color(51, 51, 255));
         daftarUser.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        daftarUser.setForeground(new java.awt.Color(255, 255, 255));
         daftarUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/1363865588_config-users.png"))); // NOI18N
         daftarUser.setText("daftar pengguna");
         daftarUser.addActionListener(new java.awt.event.ActionListener() {
