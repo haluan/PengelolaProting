@@ -27,7 +27,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         try {
             // TODO code application logic here
-            UIManager.setLookAndFeel(new com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel());
+            UIManager.setLookAndFeel(new WindowsLookAndFeel());
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
