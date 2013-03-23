@@ -2759,7 +2759,7 @@ public class FormInduk extends javax.swing.JFrame {
         }
         daftarBinaanDosen.removeAllItems();
         for (Mahasiswa mhs : lm) {
-            ls.add((mhs.getNim()+". "+mhs.getNama()));
+            ls.add((mhs.getNim() + ". " + mhs.getNama()));
         }
         for (String s : ls) {
             daftarBinaanDosen.addItem(s);
@@ -2768,18 +2768,37 @@ public class FormInduk extends javax.swing.JFrame {
 
         pesanMasukDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                row = pesanKeluarSiswa.getSelectedRow();
+                row = pesanMasukDosen.getSelectedRow();
                 if (row != -1) {
-//                    isiText();
+                    sinyalHapus = 0;
+                    jLabel15.setText("dari    : ");
+                    jLabel43.setText("siswa");
+                    Pesan pesan = recordMasuk.get(row);
+                    jLabel44.setText(pesan.getTgl());
+                    jLabel45.setText(pesan.getJam());
+                    isiBukaPesan.setText(pesan.getIsi());
+                    tempPengirim = onUsed;
+                    tempPenerima = pesan.getIdOrang();
+                    bacaPsnMasukMhs.show();
                 }
             }
         });
 
         pesanKeluarDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                row = pesanKeluarSiswa.getSelectedRow();
+                row = pesanKeluarDosen.getSelectedRow();
                 if (row != -1) {
 //                    isiText();
+                    sinyalHapus = 1;
+                    jLabel15.setText("ke    : ");
+                    jLabel43.setText("siswa");
+                    Pesan pesan = recordKeluar.get(row);
+                    jLabel44.setText(pesan.getTgl());
+                    jLabel45.setText(pesan.getJam());
+                    isiBukaPesan.setText(pesan.getIsi());
+                    tempPengirim = onUsed;
+                    tempPenerima = pesan.getIdOrang();
+                    bacaPsnMasukMhs.show();
                 }
             }
         });
@@ -3152,16 +3171,16 @@ public class FormInduk extends javax.swing.JFrame {
             Pesan pesan = new Pesan();
             pesan.setIsi(mailContent1.getText());
             String temp = daftarBinaanDosen.getSelectedItem().toString();
-            String temp2="";
-            for(int i=0;i<temp.length();i++){
-                if(temp.charAt(i)!='.'){
-                    temp2+=temp.charAt(i);
+            String temp2 = "";
+            for (int i = 0; i < temp.length(); i++) {
+                if (temp.charAt(i) != '.') {
+                    temp2 += temp.charAt(i);
                 }
-                if (temp.charAt(i)=='.'){
+                if (temp.charAt(i) == '.') {
                     break;
                 }
             }
-            System.out.println("YOOOO : "+temp2);
+            System.out.println("YOOOO : " + temp2);
 //            System.out.println("" + daftarBinaanDosen.getSelectedItem().toString());
             String nimPenerima = temp2;
             try {
