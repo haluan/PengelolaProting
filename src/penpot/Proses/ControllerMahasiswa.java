@@ -57,13 +57,16 @@ public class ControllerMahasiswa {
 
     public Mahasiswa insert(Mahasiswa m) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().
-                prepareStatement("insert into mahasiswa (nim,nama,password,kelas)"
-                + " values(?,?,?,?)");
+                prepareStatement("insert into mahasiswa (nim,nama,password,kelas,status"
+                + ",jeniskelamin,jabatan)"
+                + " values(?,?,?,?,?,?,?)");
         st.setString(1, m.getNim());
         st.setString(2, m.getNama());
         st.setString(3, m.getPassword());
         st.setString(4, m.getKelas());
-
+        st.setString(5, m.getStatus());
+        st.setString(6, m.getStatus());
+        st.setString(7, m.getJabatan());
         st.executeUpdate();
         return m;
     }
@@ -71,7 +74,8 @@ public class ControllerMahasiswa {
     public List<Mahasiswa> getKelompok(String idkelompok) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nim, m.nama, kelas,status, jabatan from mahasiswa "
-                + "m join kelompok using (idkelompok) where idkelompok='"+idkelompok+"'";
+                + "m join kelompok using (idkelompok) where idkelompok='"+idkelompok+"'"
+                + "order by nim";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
         while (rs.next()) {
@@ -89,7 +93,7 @@ public class ControllerMahasiswa {
 
     public List<Mahasiswa> getAll() throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        query = "select nim, nama, kelas,status from mahasiswa "
+        query = "select nim, nama, kelas,status,jabatan, jeniskelamin from mahasiswa "
                 + "order by nim asc";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
@@ -99,6 +103,8 @@ public class ControllerMahasiswa {
             m.setNama(rs.getString("nama"));
             m.setKelas(rs.getString("kelas"));
             m.setStatus(rs.getString("status"));
+            m.setJabatan(rs.getString("jabatan"));
+            m.setJenisKelamin(rs.getString("jeniskelamin"));
             listMhs.add(m);
         }
 

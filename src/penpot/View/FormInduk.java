@@ -142,15 +142,17 @@ public class FormInduk extends javax.swing.JFrame {
 
     void isiTabeSiswa() {
         int x = 0;
-        Object data[][] = new Object[recordSiswa.size()][4];
+        Object data[][] = new Object[recordSiswa.size()][6];
         for (Mahasiswa m : recordSiswa) {
             data[x][0] = m.getNim();
             data[x][1] = m.getNama();
             data[x][2] = m.getKelas();
             data[x][3] = m.getStatus();
+            data[x][5] = m.getJenisKelamin();
+            data[x][4] = m.getJabatan();
             x++;
         }
-        String judul[] = {"nim", "nama", "kelas", "status"};
+        String judul[] = {"nim", "nama", "kelas", "status","jabatan","kelamin"};
         tabelSiswaAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane7.setViewportView(tabelSiswaAdmin);
     }
@@ -188,7 +190,7 @@ public class FormInduk extends javax.swing.JFrame {
 
     void isiTabelDosen() {
         int x = 0;
-        Object data[][] = new Object[recordSiswa.size()][2];
+        Object data[][] = new Object[recordDosen.size()][2];
         for (Dosen d : recordDosen) {
             data[x][0] = d.getNip();
             data[x][1] = d.getNama();
