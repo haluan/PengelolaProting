@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package penpot.Objek;
+package penpot.Model;
 
 /**
  *
  * @author haluan
  */
-public class LogBookIndividu {
+public class LogBookKelompok {
     
 }

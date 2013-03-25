@@ -22,19 +22,19 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import penpot.Objek.Admin;
-import penpot.Objek.Dosen;
-import penpot.Objek.Kelompok;
-import penpot.Objek.Mahasiswa;
-import penpot.Objek.Pesan;
-import penpot.Objek.Proyek;
-import penpot.Proses.ControllerAdmin;
-import penpot.Proses.ControllerDosen;
-import penpot.Proses.ControllerMahasiswa;
-import penpot.Proses.ControllerProyek;
-import penpot.Proses.kelolaBaru;
-import penpot.Proses.prosesMasuk;
-import penpot.Proses.prosesPesan;
+import penpot.Model.Admin;
+import penpot.Model.Dosen;
+import penpot.Model.Kelompok;
+import penpot.Model.Mahasiswa;
+import penpot.Model.Pesan;
+import penpot.Model.Proyek;
+import penpot.Controller.ControllerAdmin;
+import penpot.Controller.ControllerDosen;
+import penpot.Controller.ControllerMahasiswa;
+import penpot.Controller.ControllerProyek;
+import penpot.Controller.kelolaBaru;
+import penpot.Controller.prosesMasuk;
+import penpot.Controller.prosesPesan;
 
 /**
  *
@@ -100,8 +100,9 @@ public class FormInduk extends javax.swing.JFrame {
         }
         if (x == 0) {
             totalInMail.setText("total pesan masuk : 0");
+            totMailDsn.setText("total pesan masuk : 0");
         } else {
-
+            totMailDsn.setText("total pesan masuk : " + x);
             totalInMail.setText("total pesan masuk : " + x);
         }
         String judul[] = {"tanggal", "jam", "dari", "isi"};
@@ -127,8 +128,10 @@ public class FormInduk extends javax.swing.JFrame {
         }
         if (x == 0) {
             totalOutMail.setText("total pesan keluar : " + x);
+            totOutMailDsn.setText("total  pesan keluar : " + x);
         } else {
             totalOutMail.setText("total pesan keluar : " + x);
+            
         }
         String judul[] = {"tanggal", "jam", "ke", "isi"};
         if (status.equals("siswa")) {
@@ -474,9 +477,11 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel15 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         pesanMasukDosen = new javax.swing.JTable();
+        totMailDsn = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         pesanKeluarDosen = new javax.swing.JTable();
+        totOutMailDsn = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
         jButton28 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
@@ -1798,21 +1803,29 @@ public class FormInduk extends javax.swing.JFrame {
         ));
         jScrollPane4.setViewportView(pesanMasukDosen);
 
+        totMailDsn.setText("jLabel42");
+
         javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
         jPanel15.setLayout(jPanel15Layout);
         jPanel15Layout.setHorizontalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel15Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
+                    .addGroup(jPanel15Layout.createSequentialGroup()
+                        .addComponent(totMailDsn)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel15Layout.setVerticalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
+            .addGroup(jPanel15Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(totMailDsn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("inbox", jPanel15);
@@ -1830,20 +1843,28 @@ public class FormInduk extends javax.swing.JFrame {
         ));
         jScrollPane5.setViewportView(pesanKeluarDosen);
 
+        totOutMailDsn.setText("jLabel42");
+
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
+                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
+                    .addGroup(jPanel16Layout.createSequentialGroup()
+                        .addComponent(totOutMailDsn)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(totOutMailDsn)
                 .addContainerGap())
         );
 
@@ -3723,6 +3744,8 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel tgl2;
     private javax.swing.JLabel tgl3;
     private javax.swing.JLabel tgl4;
+    private javax.swing.JLabel totMailDsn;
+    private javax.swing.JLabel totOutMailDsn;
     private javax.swing.JLabel totalInMail;
     private javax.swing.JLabel totalOutMail;
     private javax.swing.JLabel untuk;

@@ -10,17 +10,17 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import penpot.Koneksi.JembatanLogin;
-import penpot.Objek.Admin;
-import penpot.Objek.Dosen;
-import penpot.Objek.Kelompok;
-import penpot.Objek.Mahasiswa;
-import penpot.Objek.Pesan;
-import penpot.Objek.Proyek;
-import penpot.Proses.ControllerAdmin;
-import penpot.Proses.ControllerDosen;
-import penpot.Proses.ControllerMahasiswa;
-import penpot.Proses.ControllerProyek;
-import penpot.Proses.prosesPesan;
+import penpot.Model.Admin;
+import penpot.Model.Dosen;
+import penpot.Model.Kelompok;
+import penpot.Model.Mahasiswa;
+import penpot.Model.Pesan;
+import penpot.Model.Proyek;
+import penpot.Controller.ControllerAdmin;
+import penpot.Controller.ControllerDosen;
+import penpot.Controller.ControllerMahasiswa;
+import penpot.Controller.ControllerProyek;
+import penpot.Controller.prosesPesan;
 import penpot.View.FormInduk;
 
 /**
