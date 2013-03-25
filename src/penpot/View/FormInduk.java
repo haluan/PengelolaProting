@@ -84,6 +84,9 @@ public class FormInduk extends javax.swing.JFrame {
 
         statusDaftar.addActionListener(new comboxDaftar());
         statusDaftar.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
+
+
+        t1.start();
     }
 
     void isiTabelMasuk(String status) throws SQLException {
@@ -3146,7 +3149,6 @@ public class FormInduk extends javax.swing.JFrame {
         if (userMasuk.getText().length() != 0 && passwordMasuk.getText().length() != 0) {
             if (posmas.periksaMasuk(userMasuk.getText(), passwordMasuk.getText(), sinyalemen) == true) {
                 peringatanMasuk.hide();
-                t1.start();
                 CardLayout cad = (CardLayout) induk.getLayout();
                 if (sinyalemen == 0) {
                     cad.show(induk, "menu");
