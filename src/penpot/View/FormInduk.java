@@ -48,7 +48,6 @@ public class FormInduk extends javax.swing.JFrame {
     private Thread t1 = new indor();
     private int sinyalemen;
     private int sinyalemenDaftar;
-    prosesPesan propes = new prosesPesan();
     private kelolaBaru kb = new kelolaBaru();
     private prosesMasuk posmas = new prosesMasuk();
     //Record u/ tabel
@@ -88,7 +87,7 @@ public class FormInduk extends javax.swing.JFrame {
         statusDaftar.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
     }
 
-    void isiTabelMasuk(String status) {
+    void isiTabelMasuk(String status) throws SQLException {
         Object data[][] = new Object[recordMasuk.size()][4];
         int x = 0;
         for (Pesan pes : recordMasuk) {
@@ -98,25 +97,21 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][1] = pes.getJam();
             x++;
         }
-        if (x == 0) {
-            totalInMail.setText("total pesan masuk : 0");
-            totMailDsn.setText("total pesan masuk : 0");
-        } else {
-            totMailDsn.setText("total pesan masuk : " + x);
-            totalInMail.setText("total pesan masuk : " + x);
-        }
+        
         String judul[] = {"tanggal", "jam", "dari", "isi"};
         if (status.equals("siswa")) {
             pesanMasukSiswa.setModel(new DefaultTableModel(data, judul));
             jScrollPane2.setViewportView(pesanMasukSiswa);
+            totalInMail.setText(prosespesan.jumlahMailMasuk(onUsed));
         } else {
             pesanMasukDosen.setModel(new DefaultTableModel(data, judul));
             jScrollPane4.setViewportView(pesanMasukDosen);
+            totMailDsn.setText(prosespesan.jumlahMailMasuk(onUsed));
         }
 
     }
 
-    void isiTabelKeluar(String status) {
+    void isiTabelKeluar(String status) throws SQLException {
         int x = 0;
         Object data[][] = new Object[recordKeluar.size()][4];
         for (Pesan pes : recordKeluar) {
@@ -126,20 +121,16 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][1] = pes.getJam();
             x++;
         }
-        if (x == 0) {
-            totalOutMail.setText("total pesan keluar : " + x);
-            totOutMailDsn.setText("total  pesan keluar : " + x);
-        } else {
-            totalOutMail.setText("total pesan keluar : " + x);
-            
-        }
+       
         String judul[] = {"tanggal", "jam", "ke", "isi"};
         if (status.equals("siswa")) {
             pesanKeluarSiswa.setModel(new DefaultTableModel(data, judul));
             jScrollPane3.setViewportView(pesanKeluarSiswa);
+            totalOutMail.setText(prosespesan.jumlahMailKeluar(onUsed));
         } else {
             pesanKeluarDosen.setModel(new DefaultTableModel(data, judul));
             jScrollPane5.setViewportView(pesanKeluarDosen);
+            totOutMailDsn.setText(prosespesan.jumlahMailKeluar(onUsed));
         }
     }
 
@@ -3207,7 +3198,7 @@ public class FormInduk extends javax.swing.JFrame {
             try {
                 pesan.setTgl(this.showDateNow());
                 pesan.setJam(this.showTimeNow());
-                propes.siswaKirimDosen(onUsed, dosenPenerima, pesan);
+                prosespesan.siswaKirimDosen(onUsed, dosenPenerima, pesan);
                 mailContent.setText("");
                 this.loadPesan("siswa");
                 newMail.hide();
@@ -3244,8 +3235,8 @@ public class FormInduk extends javax.swing.JFrame {
                 pesan.setJam(jLabel45.getText());
                 pesan.setPenerima(tempPenerima);
                 try {
-                    propes.deletePsnMhsMsuk(pesan);
-                    propes.komit();
+                    prosespesan.deletePsnMhsMsuk(pesan);
+                    prosespesan.komit();
                 } catch (SQLException ex) {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -3258,8 +3249,8 @@ public class FormInduk extends javax.swing.JFrame {
                 pesan.setPenerima(tempPenerima);
                 pesan.setPengirim(onUsed);
                 try {
-                    propes.deletePsnMhsKlr(pesan);
-                    propes.komit();
+                    prosespesan.deletePsnMhsKlr(pesan);
+                    prosespesan.komit();
                 } catch (SQLException ex) {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -3446,7 +3437,7 @@ public class FormInduk extends javax.swing.JFrame {
             try {
                 pesan.setTgl(this.showDateNow());
                 pesan.setJam(this.showTimeNow());
-                propes.dosenKirimSiswa(onUsed, nimPenerima, pesan);
+                prosespesan.dosenKirimSiswa(onUsed, nimPenerima, pesan);
                 mailContent1.setText("");
                 newMail1.hide();
                 newMail1.dispose();

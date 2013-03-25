@@ -54,6 +54,32 @@ public class prosesPesan {
         st.executeUpdate();
         return p;
     }
+    
+    public String jumlahMailMasuk(String userNow) throws SQLException{
+        String hasil="0";
+       Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        query = "select count(kepada) from mahasiswa m join pesan using (nim)"
+                + " join dosen d using (nip) where kepada='"+userNow+"'";
+        
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {            
+           hasil=rs.getString(1);
+        }
+         return hasil;
+    }
+    
+    public String jumlahMailKeluar(String userNow) throws SQLException{
+       String hasil="0";
+       Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        query = "select count(sender) from mahasiswa m join pesan using (nim)"
+                + " join dosen d using (nip) where sender='"+userNow+"'";
+        
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {            
+           hasil=rs.getString(1);          
+        }
+         return hasil;
+    }
 
     public List<Pesan> getAllMasuk(String userNow, String status) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
@@ -61,6 +87,7 @@ public class prosesPesan {
                 + "join pesan using (nim)"
                 + "join dosen d using (nip)"
                 + "where kepada='"+userNow+"' order by proto desc,jam desc";
+        
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listMasuk = new ArrayList<Pesan>();
         while (rs.next()) {            
