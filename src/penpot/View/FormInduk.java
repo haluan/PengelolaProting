@@ -42,7 +42,6 @@ public class FormInduk extends javax.swing.JFrame {
     /**
      * Creates new form FormInduk
      */
-   
     //Instansiasi Model
     private Pesan pesaN = new Pesan();
     //Record u/ tabel
@@ -67,7 +66,7 @@ public class FormInduk extends javax.swing.JFrame {
     private static int sinyalHapus;
     private static String nim, nip;
     private String idKelompok;
-     private Thread t1;
+    private Thread t1;
     private int sinyalemen;
     private int sinyalemenDaftar;
 
