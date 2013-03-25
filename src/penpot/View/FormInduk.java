@@ -4,10 +4,7 @@
  */
 package penpot.View;
 
-import com.sun.java.swing.plaf.windows.WindowsMenuBarUI;
-import com.sun.java.swing.plaf.windows.WindowsMenuItemUI;
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -45,15 +42,13 @@ public class FormInduk extends javax.swing.JFrame {
     /**
      * Creates new form FormInduk
      */
-    private Thread t1 = new indor();
-    private int sinyalemen;
-    private int sinyalemenDaftar;
-    private kelolaBaru kb = new kelolaBaru();
-    private prosesMasuk posmas = new prosesMasuk();
+   
+    //Instansiasi Model
+    private Pesan pesaN = new Pesan();
     //Record u/ tabel
-    private List<Pesan> recordMasuk = new ArrayList<Pesan>();
-    private List<Pesan> recordKeluar = new ArrayList<Pesan>();
-    private List<Mahasiswa> recordSiswa = new ArrayList<Mahasiswa>();
+    private List<Pesan> recordMasuk = new ArrayList<>();
+    private List<Pesan> recordKeluar = new ArrayList<>();
+    private List<Mahasiswa> recordSiswa = new ArrayList<>();
     private List<Dosen> recordDosen = new ArrayList<>();
     private List<Mahasiswa> recordTemanKelompok = new ArrayList<>();
     private List<Proyek> recordProyek = new ArrayList<>();
@@ -63,14 +58,18 @@ public class FormInduk extends javax.swing.JFrame {
     private ControllerAdmin ca = new ControllerAdmin();
     private prosesPesan prosespesan = new prosesPesan();
     private ControllerProyek cp = new ControllerProyek();
+    private kelolaBaru kb = new kelolaBaru();
+    private prosesMasuk posmas = new prosesMasuk();
     //variabel tambahan
     private int row;
     private static int seen;
-    Pesan pesaN = new Pesan();
     private static String onUsed = "", tempPengirim, tempPenerima;
     private static int sinyalHapus;
     private static String nim, nip;
     private String idKelompok;
+     private Thread t1;
+    private int sinyalemen;
+    private int sinyalemenDaftar;
 
     public FormInduk() {
         initComponents();
@@ -79,7 +78,8 @@ public class FormInduk extends javax.swing.JFrame {
         newMail.setSize(600, 400);
         bacaPsnMasukMhs.setSize(600, 400);
         editMahasiswa.setSize(400, 300);
-        t1.start();
+        t1 = new indor();
+        //tabelisasi
         jComboBox1.addActionListener(new combox());
         jComboBox1.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
 
@@ -97,7 +97,7 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][1] = pes.getJam();
             x++;
         }
-        
+
         String judul[] = {"tanggal", "jam", "dari", "isi"};
         if (status.equals("siswa")) {
             pesanMasukSiswa.setModel(new DefaultTableModel(data, judul));
@@ -121,7 +121,7 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][1] = pes.getJam();
             x++;
         }
-       
+
         String judul[] = {"tanggal", "jam", "ke", "isi"};
         if (status.equals("siswa")) {
             pesanKeluarSiswa.setModel(new DefaultTableModel(data, judul));
@@ -146,7 +146,7 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][4] = m.getJabatan();
             x++;
         }
-        String judul[] = {"nim", "nama", "kelas", "status","jabatan","kelamin"};
+        String judul[] = {"nim", "nama", "kelas", "status", "jabatan", "kelamin"};
         tabelSiswaAdmin.setModel(new DefaultTableModel(data, judul));
         jScrollPane7.setViewportView(tabelSiswaAdmin);
     }
@@ -3147,6 +3147,7 @@ public class FormInduk extends javax.swing.JFrame {
         if (userMasuk.getText().length() != 0 && passwordMasuk.getText().length() != 0) {
             if (posmas.periksaMasuk(userMasuk.getText(), passwordMasuk.getText(), sinyalemen) == true) {
                 peringatanMasuk.hide();
+                t1.start();
                 CardLayout cad = (CardLayout) induk.getLayout();
                 if (sinyalemen == 0) {
                     cad.show(induk, "menu");
