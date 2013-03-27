@@ -278,10 +278,18 @@ public class FormInduk extends javax.swing.JFrame {
         return hasil;
     }
 
-    public String showDateNow() {
+    public String showDateNow(int s) {
         Calendar cal = Calendar.getInstance();
+        String hasil ="";
+        if(s==0){
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyy");
-        String hasil = sdf.format(cal.getTime());
+        hasil = sdf.format(cal.getTime());
+        }
+        if(s==1)
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
+            hasil = sdf.format(cal.getTime());
+        }        
         return hasil;
     }
 
@@ -294,16 +302,16 @@ public class FormInduk extends javax.swing.JFrame {
 
     public void update() {
         if (sinyalemen == 0) {
-            tgl1.setText(this.showDateNow());
+            tgl1.setText(this.showDateNow(0));
             waktu1.setText(this.showTimeNow() + " WIB");
         } else if (sinyalemen == 2) {
-            tgl2.setText(this.showDateNow());
+            tgl2.setText(this.showDateNow(0));
             waktu2.setText(this.showTimeNow() + " WIB");
         } else if (sinyalemen == 1) {
-            tgl3.setText(this.showDateNow());
+            tgl3.setText(this.showDateNow(0));
             waktu3.setText(this.showTimeNow() + " WIB");
         } else {
-            tgl4.setText(this.showDateNow());
+            tgl4.setText(this.showDateNow(0));
             waktu4.setText(this.showTimeNow() + " WIB");
         }
     }
@@ -3198,7 +3206,8 @@ public class FormInduk extends javax.swing.JFrame {
             pesan.setIsi(mailContent.getText());
             String dosenPenerima = d.getNip();
             try {
-                pesan.setTgl(this.showDateNow());
+                pesan.setTgl(this.showDateNow(0));
+                pesan.setProto(this.showDateNow(1));
                 pesan.setJam(this.showTimeNow());
                 prosespesan.siswaKirimDosen(onUsed, dosenPenerima, pesan);
                 mailContent.setText("");
@@ -3437,7 +3446,8 @@ public class FormInduk extends javax.swing.JFrame {
 //            System.out.println("" + daftarBinaanDosen.getSelectedItem().toString());
             String nimPenerima = temp2;
             try {
-                pesan.setTgl(this.showDateNow());
+                pesan.setTgl(this.showDateNow(0));
+                pesan.setProto(this.showDateNow(1));
                 pesan.setJam(this.showTimeNow());
                 prosespesan.dosenKirimSiswa(onUsed, nimPenerima, pesan);
                 mailContent1.setText("");

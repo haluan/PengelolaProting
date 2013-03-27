@@ -44,7 +44,7 @@ public class ControllerMahasiswa {
     public Kelompok getDataKelompok(String nim) throws SQLException {
         Kelompok k= new Kelompok();
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select idkelompok, k.nama from mahasiswa "
+        String query = "select idkelompok, namakelompok from mahasiswa "
                 + "join kelompok k using (idkelompok)"+
                 "where nim='" + nim + "' order by nim asc";
         ResultSet rs = st.executeQuery(query);

@@ -65,6 +65,12 @@ public class Test extends Thread implements Runnable {
         String hasil = sdf.format(cal.getTime());
         return hasil;
     }
+    public String showDateNowS() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
+        String hasil = sdf.format(cal.getTime());
+        return hasil;
+    }
 
     @Override
     public synchronized void run() {
@@ -79,12 +85,12 @@ public class Test extends Thread implements Runnable {
         for (int i = 0; i < 100; i++) {
             try {
                 pes.setIsi("Helo siswa bangga sekali dengan anda untuk yang ke-" + i);
-                pes.setTgl(this.showDateNow());
+                pes.setTgl(this.showDateNowS());
                 pes.setJam(this.showTimeNow());
                 popes.siswaKirimDosen("36", "190", pes);
                 pes.setIsi("Helo dosen bangga sekali dengan anda untuk yang ke-" + i);
                 popes.dosenKirimSiswa("190", "36", pes);
-                Thread.sleep(100);
+                Thread.sleep(1);
             } catch (SQLException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -145,7 +151,8 @@ public class Test extends Thread implements Runnable {
         Test t = new Test();
 //        t.testProyek();
 //
-//        t.run();
-        t.testAdmin();
+        t.run();
+//        t.testProyek();
+//        t.testAdmin();
     }
 }

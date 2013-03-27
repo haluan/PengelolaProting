@@ -9,12 +9,19 @@ package penpot.Model;
  * @author haluan
  */
 public class Pesan {
-    private String isi,pengirim,penerima,tgl, jam,idOrang;
+    private String isi,pengirim,penerima,tgl, jam,idOrang,proto;
 
     public String getIdOrang() {
         return idOrang;
     }
 
+    public String getProto() {
+        return proto;
+    }
+
+    public void setProto(String proto) {
+        this.proto = proto;
+    }
     public void setIdOrang(String idOrang) {
         this.idOrang = idOrang;
     }
