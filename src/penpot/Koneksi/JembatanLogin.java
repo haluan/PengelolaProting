@@ -18,7 +18,7 @@ public class JembatanLogin {
     }
     
     public JembatanLogin(){
-        myLgn = new LoginAction("proting", "z");
+        myLgn = new LoginAction("root", "");
 
 
         if (myLgn.cekLogin()) {

@@ -33,7 +33,7 @@ public class prosesPesan {
         st.setString(4, p.getTgl());
         st.setString(5, pengirimNip);
         st.setString(6, p.getJam());
-        st.setString(7, p.getTgl());
+        st.setString(7, p.getProto());
         st.setString(8, penerimaNim);
         st.executeUpdate();
         return p;
@@ -49,7 +49,7 @@ public class prosesPesan {
         st.setString(4, p.getTgl());
         st.setString(5, pengirimNim);
         st.setString(6, p.getJam());
-        st.setString(7, p.getTgl());
+        st.setString(7, p.getProto());
         st.setString(8, penerimaNip);
         st.executeUpdate();
         return p;
@@ -94,7 +94,7 @@ public class prosesPesan {
                 Pesan pesan = new Pesan();
                 pesan.setIsi(rs.getString("isi"));
                 pesan.setTgl(rs.getString("tanggal"));
-                pesan.setJam(rs.getString("jam"));
+                pesan.setJam(rs.getString("jam").toString());
                 if(status.equals("siswa")){
                 pesan.setPengirim(rs.getString(2));
                 }else
@@ -120,7 +120,7 @@ public class prosesPesan {
                 Pesan pesan = new Pesan();
                 pesan.setIsi(rs.getString("isi"));
                 pesan.setTgl(rs.getString("tanggal"));
-                pesan.setJam(rs.getString("jam"));
+                pesan.setJam(rs.getString("jam").toString());
                 if(status.equals("siswa")){
                 pesan.setPenerima(rs.getString(2));
                 }else

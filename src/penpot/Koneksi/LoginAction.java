@@ -3,9 +3,6 @@
  * and open the template in the editor.
  */
 package penpot.Koneksi;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -20,7 +17,9 @@ public class LoginAction {
     private boolean isOK = false;
     private String cURLDB;
     private java.sql.Connection conn;
-    private String url = "jdbc:oracle:thin:@localhost:1521:XE";
+    //jdbc:oracle:thin:@localhost:1521:XE
+    private String url = "jdbc:mysql://localhost:3306/proting?zeroDateTimeBehavior=convertToNull";
+    
     private Statement stm = null;
 
     /**
