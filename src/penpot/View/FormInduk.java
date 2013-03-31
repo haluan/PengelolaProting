@@ -568,6 +568,11 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel28 = new javax.swing.JPanel();
         jScrollPane9 = new javax.swing.JScrollPane();
         tabelAdminAdmin = new javax.swing.JTable();
+        temp = new javax.swing.JPanel();
+        jPanel31 = new javax.swing.JPanel();
+        jPanel32 = new javax.swing.JPanel();
+        jLabel42 = new javax.swing.JLabel();
+        jPanel33 = new javax.swing.JPanel();
         jMenuBar2 = new javax.swing.JMenuBar();
         help = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -977,11 +982,12 @@ public class FormInduk extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1000, 600));
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         induk.setLayout(new java.awt.CardLayout());
 
-        jPanel2.setBackground(new java.awt.Color(51, 51, 255));
+        jPanel2.setBackground(new java.awt.Color(51, 0, 153));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setText("masuk");
@@ -1164,7 +1170,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(masuk, "masuk");
 
-        navigasi.setBackground(new java.awt.Color(51, 51, 255));
+        navigasi.setBackground(new java.awt.Color(51, 0, 153));
 
         jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
@@ -1640,13 +1646,13 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(navigasi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(konten, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         induk.add(menu, "menu");
 
-        navDos.setBackground(new java.awt.Color(51, 51, 255));
+        navDos.setBackground(new java.awt.Color(51, 0, 153));
 
         jButton12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton12.setForeground(new java.awt.Color(255, 255, 255));
@@ -2128,7 +2134,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(dosen, "dosen");
 
-        navKap.setBackground(new java.awt.Color(51, 51, 255));
+        navKap.setBackground(new java.awt.Color(51, 0, 153));
 
         jButton17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton17.setForeground(new java.awt.Color(255, 255, 255));
@@ -2384,7 +2390,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         induk.add(kaprodi, "kaprodi");
 
-        navKap1.setBackground(new java.awt.Color(51, 51, 255));
+        navKap1.setBackground(new java.awt.Color(51, 0, 153));
 
         jButton21.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton21.setForeground(new java.awt.Color(204, 204, 255));
@@ -2826,6 +2832,84 @@ public class FormInduk extends javax.swing.JFrame {
         );
 
         induk.add(admin, "admin");
+
+        jPanel31.setBackground(new java.awt.Color(255, 102, 102));
+        jPanel31.setForeground(new java.awt.Color(255, 102, 102));
+
+        javax.swing.GroupLayout jPanel31Layout = new javax.swing.GroupLayout(jPanel31);
+        jPanel31.setLayout(jPanel31Layout);
+        jPanel31Layout.setHorizontalGroup(
+            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1375, Short.MAX_VALUE)
+        );
+        jPanel31Layout.setVerticalGroup(
+            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        jPanel32.setBackground(new java.awt.Color(102, 102, 255));
+
+        jLabel42.setText("jLabel42");
+
+        javax.swing.GroupLayout jPanel32Layout = new javax.swing.GroupLayout(jPanel32);
+        jPanel32.setLayout(jPanel32Layout);
+        jPanel32Layout.setHorizontalGroup(
+            jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel32Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel42)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        jPanel32Layout.setVerticalGroup(
+            jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 422, Short.MAX_VALUE)
+            .addGroup(jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel32Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel42)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        jPanel33.setBackground(new java.awt.Color(204, 255, 0));
+
+        javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
+        jPanel33.setLayout(jPanel33Layout);
+        jPanel33Layout.setHorizontalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel33Layout.setVerticalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout tempLayout = new javax.swing.GroupLayout(temp);
+        temp.setLayout(tempLayout);
+        tempLayout.setHorizontalGroup(
+            tempLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tempLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(tempLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        tempLayout.setVerticalGroup(
+            tempLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tempLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        induk.add(temp, "card7");
 
         getContentPane().add(induk);
 
@@ -3633,6 +3717,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
+    private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel45;
@@ -3672,6 +3757,9 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -3743,6 +3831,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTable tabelSiapSetuju;
     private javax.swing.JTable tabelSiswaAdmin;
     private javax.swing.JTable tabelTemanKelompok;
+    private javax.swing.JPanel temp;
     private javax.swing.JLabel tgl1;
     private javax.swing.JLabel tgl2;
     private javax.swing.JLabel tgl3;
