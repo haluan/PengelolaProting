@@ -50,7 +50,7 @@ public class ControllerDosen {
     public List<Mahasiswa> getAllBinaan(String nip) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select nim, m.nama, "
-                + "kelas,status from mahasiswa m "
+                + "kelas,status,jabatan from mahasiswa m "
                 + "join kelompok using (idkelompok)"
                 + "join proyek using (idproyek) "
                 + "join dosen using (nip)"
@@ -64,6 +64,7 @@ public class ControllerDosen {
             m.setNama(rs.getString(2));
             m.setKelas(rs.getString("kelas"));
             m.setStatus(rs.getString("status"));
+            m.setJabatan(rs.getString("jabatan"));
             listMhs.add(m);
         }
 

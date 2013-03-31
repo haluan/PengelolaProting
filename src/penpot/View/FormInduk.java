@@ -183,6 +183,22 @@ public class FormInduk extends javax.swing.JFrame {
         tabelTemanKelompok.setModel(new DefaultTableModel(data, judul));
         jScrollPane10.setViewportView(tabelTemanKelompok);
     }
+    
+    void isiTabelBimbingan() {
+        int x = 0;
+        Object data[][] = new Object[recordTemanKelompok.size()][6];
+        for (Mahasiswa m : recordTemanKelompok) {
+            data[x][0] = m.getNim();
+            data[x][1] = m.getNama();
+            data[x][2] = m.getKelas();
+            data[x][3] = m.getStatus();
+            data[x][4] = m.getJabatan();
+            x++;
+        }
+        String judul[] = {"nim", "nama", "kelas", "status", "jabatan","nilai"};
+        bimbinganDosen.setModel(new DefaultTableModel(data, judul));
+        jScrollPane13.setViewportView(bimbinganDosen);
+    }
 
     void isiTabelDosen() {
         int x = 0;
@@ -472,6 +488,8 @@ public class FormInduk extends javax.swing.JFrame {
         kontenDos = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
+        jScrollPane13 = new javax.swing.JScrollPane();
+        bimbinganDosen = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
@@ -1773,20 +1791,41 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel22.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel22.setText("BIMBINGAN");
 
+        bimbinganDosen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane13.setViewportView(bimbinganDosen);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(590, Short.MAX_VALUE)
-                .addComponent(jLabel22)
-                .addGap(380, 380, 380))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, 1024, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(451, 451, 451)
+                        .addComponent(jLabel22)))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabel22)
-                .addGap(0, 606, Short.MAX_VALUE))
+                .addGap(76, 76, 76)
+                .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 92, Short.MAX_VALUE))
         );
 
         kontenDos.add(jPanel3, "bimbingan");
@@ -3063,6 +3102,13 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         // TODO add your handling code here:
+        
+        try {
+            recordTemanKelompok = cd.getAllBinaan(nip);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         isiTabelBimbingan();
         CardLayout cad = (CardLayout) kontenDos.getLayout();
         cad.show(kontenDos, "bimbingan");
     }//GEN-LAST:event_jButton13ActionPerformed
@@ -3249,6 +3295,24 @@ public class FormInduk extends javax.swing.JFrame {
                     cad.show(induk, "kaprodi");
                 }
                 if (sinyalemen == 2) {
+                    try {
+                         bimbinganDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = bimbinganDosen.getSelectedRow();
+                if (row != -1) {
+                    sinyalHapus = 1;
+                    jLabel15.setText("ke    : ");
+                    jLabel43.setText("Dosen Pembimbing");
+                    Mahasiswa m = recordTemanKelompok.get(row);
+                    JOptionPane.showMessageDialog(mailContent, m.getNama());
+                }
+            }
+        });
+                        recordTemanKelompok = cd.getAllBinaan(nip);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    isiTabelBimbingan();
                     cad.show(induk, "dosen");
                 }
                 if (sinyalemen == 3) {
@@ -3631,6 +3695,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JComboBox ajukanTingkat;
     private javax.swing.JFrame bacaPsnMasukMhs;
     private javax.swing.JButton batalAjukanProyek;
+    private javax.swing.JTable bimbinganDosen;
     private javax.swing.JButton cancelMail;
     private javax.swing.JButton cancelMail1;
     private javax.swing.JComboBox daftarBinaanDosen;
@@ -3770,6 +3835,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
