@@ -431,8 +431,6 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
         menu = new javax.swing.JPanel();
         navigasi = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
@@ -1000,7 +998,7 @@ public class FormInduk extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1000, 600));
+        setPreferredSize(new java.awt.Dimension(795, 556));
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         induk.setLayout(new java.awt.CardLayout());
@@ -1118,12 +1116,8 @@ public class FormInduk extends javax.swing.JFrame {
 
         jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/appt.png"))); // NOI18N
 
-        jLabel18.setText("diproduksi oleh :");
-
-        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel19.setText("P.T INOVASI TEKNIKA");
-
-        jLabel20.setText("2013");
+        jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/proting_depan_fix.jpg"))); // NOI18N
+        jLabel18.setText("jLabel18");
 
         javax.swing.GroupLayout masukLayout = new javax.swing.GroupLayout(masuk);
         masuk.setLayout(masukLayout);
@@ -1146,17 +1140,11 @@ public class FormInduk extends javax.swing.JFrame {
                         .addGap(112, 112, 112)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(392, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, masukLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(masukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(masukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(masukLayout.createSequentialGroup()
+                    .addGap(0, 39, Short.MAX_VALUE)
                     .addComponent(jLabel18)
-                    .addGroup(masukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, masukLayout.createSequentialGroup()
-                            .addComponent(jLabel19)
-                            .addGap(29, 29, 29))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, masukLayout.createSequentialGroup()
-                            .addComponent(jLabel20)
-                            .addGap(117, 117, 117)))))
+                    .addGap(0, 40, Short.MAX_VALUE)))
         );
         masukLayout.setVerticalGroup(
             masukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1177,13 +1165,12 @@ public class FormInduk extends javax.swing.JFrame {
                         .addGap(54, 54, 54)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                .addComponent(jLabel18)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel20)
-                .addGap(8, 8, 8))
+                .addContainerGap(132, Short.MAX_VALUE))
+            .addGroup(masukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(masukLayout.createSequentialGroup()
+                    .addGap(0, 73, Short.MAX_VALUE)
+                    .addComponent(jLabel18)
+                    .addGap(0, 72, Short.MAX_VALUE)))
         );
 
         induk.add(masuk, "masuk");
@@ -3738,7 +3725,9 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JButton jButton26;
     private javax.swing.JButton jButton27;
     private javax.swing.JButton jButton28;
+    private javax.swing.JButton jButton29;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton30;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -3746,6 +3735,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -3825,6 +3815,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -3876,7 +3867,9 @@ public class FormInduk extends javax.swing.JFrame {
     public javax.swing.JPanel nilai;
     private javax.swing.JTextField passwordDfatarBaru;
     private javax.swing.JPasswordField passwordMasuk;
+    private javax.swing.JPasswordField passwordMasuk1;
     private javax.swing.JLabel peringatanMasuk;
+    private javax.swing.JLabel peringatanMasuk1;
     private javax.swing.JPanel pesan;
     private javax.swing.JToggleButton pesanBaruMhs;
     private javax.swing.JTable pesanKeluarDosen;
@@ -3910,7 +3903,9 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel untuk1;
     private javax.swing.JPanel upload;
     private javax.swing.JLabel used;
+    private javax.swing.JLabel used1;
     private javax.swing.JTextField userMasuk;
+    private javax.swing.JTextField userMasuk1;
     private javax.swing.JLabel waktu1;
     private javax.swing.JLabel waktu2;
     private javax.swing.JLabel waktu3;
