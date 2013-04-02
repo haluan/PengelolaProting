@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import penpot.Koneksi.JembatanLogin;
 import penpot.Model.Admin;
 import penpot.Model.Dosen;
-import penpot.Model.Kelompok;
 import penpot.Model.Mahasiswa;
 import penpot.Model.Pesan;
 import penpot.Model.Proyek;
@@ -21,7 +20,6 @@ import penpot.Controller.ControllerDosen;
 import penpot.Controller.ControllerMahasiswa;
 import penpot.Controller.ControllerProyek;
 import penpot.Controller.prosesPesan;
-import penpot.View.FormInduk;
 
 /**
  *
