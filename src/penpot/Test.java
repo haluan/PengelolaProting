@@ -124,7 +124,7 @@ public class Test extends Thread implements Runnable {
                 m.setStatus("II");
                 m.setJabatan("ANALYST");
                 m.setJenisKelamin("n/a");
-                m.setIdKelompok("K1");
+                m.setIdProyek(3);
                 cm.insert(m);
             } catch (SQLException ex) {
                 Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,17 +8,15 @@ package penpot.Model;
  *
  * @author haluan
  */
-public class Dosen extends Pegawai{
+public class Orang {
     private String nama;
 
-    @Override
     public String getNama() {
-        return super.getNama(); //To change body of generated methods, choose Tools | Templates.
+        return nama;
     }
 
-    @Override
     public void setNama(String nama) {
-        super.setNama(nama); //To change body of generated methods, choose Tools | Templates.
+        this.nama = nama;
     }
     
 }

@@ -10,6 +10,23 @@ package penpot.Model;
  */
 public class Pesan {
     private String isi,pengirim,penerima,tgl, jam,idOrang,proto;
+    private String hapusdosen,hapussiswa;
+
+    public String getHapusdosen() {
+        return hapusdosen;
+    }
+
+    public void setHapusdosen(String hapusdosen) {
+        this.hapusdosen = hapusdosen;
+    }
+
+    public String getHapussiswa() {
+        return hapussiswa;
+    }
+
+    public void setHapussiswa(String hapussiswa) {
+        this.hapussiswa = hapussiswa;
+    }
 
     public String getIdOrang() {
         return idOrang;

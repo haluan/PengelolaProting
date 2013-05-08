@@ -15,6 +15,7 @@ import penpot.Koneksi.JembatanLogin;
 import penpot.Model.Dosen;
 import penpot.Model.Kelompok;
 import penpot.Model.Mahasiswa;
+import penpot.Model.Proyek;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ControllerMahasiswa {
         Dosen d = new Dosen();
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         String query = "select nip, nim, dosen.nama from mahasiswa "
-                + "join kelompok using (idkelompok) join proyek using (idproyek)"
+                + "join proyek using (idproyek)"
                 + " join dosen using (nip) where nim='" + nim + "'";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
@@ -41,18 +42,18 @@ public class ControllerMahasiswa {
         return d;
     }
     
-    public Kelompok getDataKelompok(String nim) throws SQLException {
-        Kelompok k= new Kelompok();
+    public Proyek getDataKelompok(String nim) throws SQLException {
+        Proyek p= new Proyek();
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select idkelompok, namakelompok from mahasiswa "
-                + "join kelompok k using (idkelompok)"+
+        String query = "select idproyek, kelompok from mahasiswa "
+                + "join proyek k using (idproyek)"+
                 "where nim='" + nim + "' order by nim asc";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
-            k.setIdKelompok(rs.getString(1));
-            k.setNamaKelompok(rs.getString(2));
+            p.setIdPro(rs.getString(1));
+            p.setKelompok(rs.getString(2));
         }
-        return k;
+        return p;
     }
 
     public Mahasiswa insert(Mahasiswa m) throws SQLException {
@@ -71,10 +72,10 @@ public class ControllerMahasiswa {
         return m;
     }
     
-    public List<Mahasiswa> getKelompok(String idkelompok) throws SQLException {
+    public List<Mahasiswa> getKelompok(String idProyek) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        query = "select m.nim, m.nama, kelas,status, jabatan from mahasiswa "
-                + "m join kelompok using (idkelompok) where idkelompok='"+idkelompok+"'"
+        query = "select m.nim, m.nama, kelas,m.status, jabatan from mahasiswa "
+                + "m join proyek using (idProyek) where idproyek='"+idProyek+"'"
                 + "order by nim";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
@@ -110,6 +111,25 @@ public class ControllerMahasiswa {
 
         return listMhs;
     }
+    
+     public Mahasiswa getData(String nim) throws SQLException {
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        Mahasiswa m = new Mahasiswa();
+        query = "select nim, nama, kelas,status,jabatan, jeniskelamin from mahasiswa "
+                + "where nim ='"+nim+"'";
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {
+            
+            m.setNim(rs.getString("nim"));
+            m.setNama(rs.getString("nama"));
+            m.setKelas(rs.getString("kelas"));
+            m.setStatus(rs.getString("status"));
+            m.setJabatan(rs.getString("jabatan"));
+            m.setJenisKelamin(rs.getString("jeniskelamin"));
+        }
+
+        return m;
+    }
 
     public void update(Mahasiswa m) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
@@ -119,6 +139,15 @@ public class ControllerMahasiswa {
         st.setString(2, m.getKelas());
         st.setString(3, m.getStatus());
         st.setString(4, m.getNim());
+        st.executeUpdate();
+    }
+    
+    public void updateIdPro(Mahasiswa m) throws SQLException {
+        PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "mahasiswa set idproyek=? where nim=?");
+
+        st.setInt(1, m.getIdProyek());
+        st.setString(2, m.getNim());
         st.executeUpdate();
     }
 

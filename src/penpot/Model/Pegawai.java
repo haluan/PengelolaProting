@@ -8,8 +8,8 @@ package penpot.Model;
  *
  * @author haluan
  */
-public class Pegawai {
-    private String nip,nama,password;
+public class Pegawai extends Orang{
+    private String nip, password;
 
     public String getNip() {
         return nip;
@@ -19,14 +19,7 @@ public class Pegawai {
         this.nip = nip;
     }
 
-    public String getNama() {
-        return nama;
-    }
-
-    public void setNama(String nama) {
-        this.nama = nama;
-    }
-
+  
     public String getPassword() {
         return password;
     }

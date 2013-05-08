@@ -4,6 +4,8 @@
  */
 package penpot.View;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -12,6 +14,7 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.util.Rotation;
+import penpot.Model.pekanMhs;
 
 /**
  *
@@ -19,20 +22,23 @@ import org.jfree.util.Rotation;
  */
 public class PieChart extends JFrame {
 
-    public PieChart() {
+    private List<pekanMhs> recordPekanMhs = new ArrayList<>();
+    public PieChart(List<pekanMhs> lp) {
         super("STATISTIK");
-        PieDataset dataset = createDataset(90);
+        recordPekanMhs=lp;
+        PieDataset dataset = createDataset(recordPekanMhs);
         JFreeChart chart = createChart(dataset, "NILAI MINGGUAN");
         ChartPanel chartpanel = new ChartPanel(chart);
         chartpanel.setPreferredSize(new java.awt.Dimension(600,470));
         setLocation(300, 100);
         setContentPane(chartpanel);        
     }
+    
 
-    private PieDataset createDataset(int j) {
+    private PieDataset createDataset(List<pekanMhs> lp) {
         DefaultPieDataset rs = new DefaultPieDataset();
-        for(int i=1;i<14;i++){
-         rs.setValue("Pekan ke-"+i+" NILAI : "+j, j);          
+        for(pekanMhs p : recordPekanMhs){
+         rs.setValue("Pekan ke-"+p.getPekan()+" NILAI : "+Integer.parseInt(p.getNilai()), Integer.parseInt(p.getNilai()));          
         }
         return rs;
     }

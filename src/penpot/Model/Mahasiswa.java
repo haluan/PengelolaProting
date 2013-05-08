@@ -9,8 +9,9 @@ package penpot.Model;
  * @author haluan
  */
 public class Mahasiswa {
-    private String nim,nama,password,kelas,status, idKelompok,jenisKelamin
+    private String nim,nama,password,kelas,status,jenisKelamin
             , jabatan;
+    private int idProyek;
 
     public String getJabatan() {
         return jabatan;
@@ -28,13 +29,15 @@ public class Mahasiswa {
         this.jenisKelamin = jenisKelamin;
     }
 
-    public String getIdKelompok() {
-        return idKelompok;
+    public int getIdProyek() {
+        return idProyek;
     }
 
-    public void setIdKelompok(String idKelompok) {
-        this.idKelompok = idKelompok;
+    public void setIdProyek(int idProyek) {
+        this.idProyek = idProyek;
     }
+
+   
 
     public String getNim() {
         return nim;

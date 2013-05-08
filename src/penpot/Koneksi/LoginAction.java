@@ -49,16 +49,7 @@ public class LoginAction {
     }
 
     public boolean cekLogin() {
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
-        } catch (java.lang.ClassNotFoundException cnfe) {
-            System.out.println("Error loading driver: " + cnfe);
-        } catch (java.lang.InstantiationException e) {
-            System.out.println("Error loading driver: " + e);
-        } catch (java.lang.IllegalAccessException e) {
-            System.out.println("Error loading driver: " + e);
-        } 
-        
+          
         try {
             conn = java.sql.DriverManager.getConnection(url, username, password);
             conn.setAutoCommit(true);
