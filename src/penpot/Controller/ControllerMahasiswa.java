@@ -115,7 +115,7 @@ public class ControllerMahasiswa {
      public Mahasiswa getData(String nim) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         Mahasiswa m = new Mahasiswa();
-        query = "select nim, nama, kelas,status,jabatan, jeniskelamin from mahasiswa "
+        query = "select nim, nama, kelas,status,jabatan, jeniskelamin, idproyek from mahasiswa "
                 + "where nim ='"+nim+"'";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
@@ -126,6 +126,7 @@ public class ControllerMahasiswa {
             m.setStatus(rs.getString("status"));
             m.setJabatan(rs.getString("jabatan"));
             m.setJenisKelamin(rs.getString("jeniskelamin"));
+            m.setIdProyek(rs.getInt("idproyek"));
         }
 
         return m;
@@ -150,6 +151,15 @@ public class ControllerMahasiswa {
         st.setString(2, m.getNim());
         st.executeUpdate();
     }
+    
+    public void updatePassMhs(Mahasiswa m) throws SQLException{
+          PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "dosen set password=? where nim=?");
+        
+        st.setString(1, m.getPassword());
+        st.setString(2, m.getNim());
+        st.executeUpdate();
+     }
 
     public void delete(String nim) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().

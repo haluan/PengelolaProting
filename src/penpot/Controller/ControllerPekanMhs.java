@@ -51,12 +51,13 @@ public class ControllerPekanMhs {
 
     public List<pekanMhs> getAll(String nim) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select pekan, nilai from pekanmhs where nim='" + nim + "'"
+        String query = "select nama, pekan, nilai from pekanmhs join mahasiswa using (nim) where nim='" + nim + "'"
                 + "order by pekan asc";
         ResultSet rs = st.executeQuery(query);
         List<pekanMhs> listNilai = new ArrayList<pekanMhs>();
         while (rs.next()) {
             pekanMhs p = new pekanMhs();
+            p.setNama(rs.getString("nama"));
             p.setPekan(rs.getString("pekan"));
             p.setNilai(rs.getString("nilai"));
 

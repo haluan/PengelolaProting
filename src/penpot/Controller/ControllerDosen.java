@@ -49,21 +49,22 @@ public class ControllerDosen {
     }
     public List<Mahasiswa> getAllBinaan(String nip) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        query = "select nim, m.nama, "
+        query = "select judul, nim, m.nama, "
                 + "kelas,m.status,jabatan from mahasiswa m "
                 + "join proyek using (idproyek) "
                 + "join dosen using (nip)"
                 + "where nip ='"+nip+"'"
-                + "order by nim asc";
+                + "order by judul asc";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
         while (rs.next()) {
             Mahasiswa m = new Mahasiswa();
             m.setNim(rs.getString("nim"));
-            m.setNama(rs.getString(2));
+            m.setNama(rs.getString(3));
             m.setKelas(rs.getString("kelas"));
             m.setStatus(rs.getString("status"));
             m.setJabatan(rs.getString("jabatan"));
+            m.setJudul(rs.getString("judul"));
             listMhs.add(m);
         }
 
@@ -92,6 +93,15 @@ public class ControllerDosen {
         st.setString(1, d.getNama());
         st.executeUpdate();
     }
+     
+      public void updatePassDosen(Dosen d) throws SQLException{
+          PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "dosen set password=? where nip=?");
+        
+        st.setString(1, d.getPassword());
+        st.setString(2, d.getNip());
+        st.executeUpdate();
+     }
      
      public void delete(String nip) throws SQLException {
        PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement

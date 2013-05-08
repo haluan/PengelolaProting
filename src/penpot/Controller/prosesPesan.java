@@ -81,13 +81,20 @@ public class prosesPesan {
          return hasil;
     }
 
-    public List<Pesan> getAllMasuk(String userNow, String status) throws SQLException {
+    public List<Pesan> getAllMasuk(String userNow, String status, int temp) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        if(temp==0){
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
                 + "join dosen d using (nip)"
-                + "where kepada='"+userNow+"' order by proto desc,jam desc";
-        
+                + "where kepada='"+userNow+"' and hapusdosen='no' order by proto desc,jam desc";
+        }
+        else{
+         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
+                + "join pesan using (nim)"
+                + "join dosen d using (nip)"
+                + "where kepada='"+userNow+"' and hapussiswa='no' order by proto desc,jam desc";   
+        }
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listMasuk = new ArrayList<Pesan>();
         while (rs.next()) {            
@@ -107,12 +114,19 @@ public class prosesPesan {
         return listMasuk;
     }
 
-    public List<Pesan> getAllKeluar(String userNow, String status) throws SQLException {
+    public List<Pesan> getAllKeluar(String userNow, String status, int temp) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        if(temp==0){
         query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
                 + "join pesan using (nim)"
                 + "join dosen d using (nip)"
-                + "where sender='"+userNow+"' order by proto desc,jam desc";
+                + "where sender='"+userNow+"' and hapusdosen='no' order by proto desc,jam desc";
+        }else{
+             query = "select m.nama, d.nama, isi,tanggal, sender, jam,nip from mahasiswa m "
+                + "join pesan using (nim)"
+                + "join dosen d using (nip)"
+                + "where sender='"+userNow+"' and hapussiswa='no' order by proto desc,jam desc";
+        }
         ResultSet rs = st.executeQuery(query);
         List<Pesan> listKeluar = new ArrayList<Pesan>();
         while (rs.next()) {
@@ -140,24 +154,45 @@ public class prosesPesan {
         ResultSet rs = st.executeQuery(query);
     }
     
-    public void deletePsnMhsMsuk(Pesan p) throws SQLException {
+    public void deletePsnMhsMsuk(Pesan p, int temp) throws SQLException {
+        
+        if(temp==0){
         PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().
-                prepareStatement("delete from pesan where nim=? and nip=? "
+                prepareStatement("update pesan set hapusdosen='yes' where "
+                + "tanggal=? and jam =? and isi=?");
+        st.setString(1, p.getTgl());
+        st.setString(2, p.getJam());
+        st.setString(3, p.getIsi());
+        st.executeUpdate();
+        }else{
+            PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().
+                prepareStatement("update pesan set hapussiswa='yes' where nim=? and nip=? "
                 + "and tanggal=? and jam =? and sender=? and isi=?");
-        st.setString(1, p.getPenerima());
+            st.setString(1, p.getPenerima());
         st.setString(2, p.getIdOrang());
         st.setString(3, p.getTgl());
         st.setString(4, p.getJam());
         st.setString(5, p.getIdOrang());
         st.setString(6, p.getIsi());
         st.executeUpdate();
-        System.out.println(""+p.getIdOrang()+p.getPenerima()+p.getPengirim()+p.getJam()
-                +p.getTgl()+p.getIsi());
+        }
+        
+        
     }
     
-    public void deletePsnMhsKlr(Pesan p) throws SQLException {
+    public void deletePsnMhsKlr(Pesan p, int temp) throws SQLException {
+        if(temp==0){
         PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().
-                prepareStatement("delete from pesan where nim=? and nip=? "
+                prepareStatement("update pesan set hapusdosen='yes' where "
+                + "tanggal=? and jam =? and isi=?");
+        
+        st.setString(1, p.getTgl());
+        st.setString(2, p.getJam());
+        st.setString(3, p.getIsi());
+        st.executeUpdate();
+        }else{
+           PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().
+                prepareStatement("update pesan set hapussiswa='yes' where nim=? and nip=? "
                 + "and tanggal=? and jam =? and sender=? and isi=?");
         st.setString(1, p.getPengirim());
         st.setString(2, p.getIdOrang());
@@ -165,9 +200,8 @@ public class prosesPesan {
         st.setString(4, p.getJam());
         st.setString(5, p.getPengirim());
         st.setString(6, p.getIsi());
-        st.executeUpdate();
-        System.out.println("NIM : "+p.getPengirim()+" NIP : "+p.getIdOrang()
-                +"TGL : "+p.getTgl()+" JAM : "+p.getJam()+" SENDER : "+p.getIdOrang()+
-                "ISI : "+p.getIsi());
+        st.executeUpdate();    
+        }
+       
     }
 }

@@ -63,6 +63,7 @@ public class ControllerProyek {
         query = "select idproyek,judul,tingkat, nama, tahun, status,jumlah, "
                 + "ajukan,pesan,setuju, kelompok, deskripsi from proyek "
                 + "join dosen using (nip)"
+                
                 + "order by nip asc";
         ResultSet rs = st.executeQuery(query);
         List<Proyek> listPro = new ArrayList<Proyek>();

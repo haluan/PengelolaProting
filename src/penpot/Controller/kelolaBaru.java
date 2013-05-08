@@ -25,4 +25,13 @@ public class kelolaBaru {
         st.executeUpdate();
         return d;
     }
+     
+     public void updatePassKaprodi(Dosen d) throws SQLException{
+          PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "dosen set password=? where nip=?");
+        
+        st.setString(1, d.getPassword());
+        st.setString(2, d.getNip());
+        st.executeUpdate();
+     }
 }

@@ -8,9 +8,18 @@ package penpot.Model;
  *
  * @author haluan
  */
-public class Mahasiswa {
+public class Mahasiswa extends Proyek{
     private String nim,nama,password,kelas,status,jenisKelamin
             , jabatan;
+    private int nilaiTotal;
+
+    public int getNilaiTotal() {
+        return nilaiTotal;
+    }
+    
+    public void setNilaiTotal(int nilaiTotal) {
+        this.nilaiTotal += nilaiTotal;
+    }
     private int idProyek;
 
     public String getJabatan() {

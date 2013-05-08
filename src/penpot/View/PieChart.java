@@ -4,13 +4,18 @@
  */
 package penpot.View;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.util.Rotation;
@@ -26,8 +31,8 @@ public class PieChart extends JFrame {
     public PieChart(List<pekanMhs> lp) {
         super("STATISTIK");
         recordPekanMhs=lp;
-        PieDataset dataset = createDataset(recordPekanMhs);
-        JFreeChart chart = createChart(dataset, "NILAI MINGGUAN");
+        final CategoryDataset dataset1 = createDataset(recordPekanMhs);
+        final JFreeChart chart = createChart(dataset1, null);
         ChartPanel chartpanel = new ChartPanel(chart);
         chartpanel.setPreferredSize(new java.awt.Dimension(600,470));
         setLocation(300, 100);
@@ -35,25 +40,22 @@ public class PieChart extends JFrame {
     }
     
 
-    private PieDataset createDataset(List<pekanMhs> lp) {
-        DefaultPieDataset rs = new DefaultPieDataset();
+    private CategoryDataset createDataset(List<pekanMhs> lp) {
+        DefaultCategoryDataset rs = new DefaultCategoryDataset();
         for(pekanMhs p : recordPekanMhs){
-         rs.setValue("Pekan ke-"+p.getPekan()+" NILAI : "+Integer.parseInt(p.getNilai()), Integer.parseInt(p.getNilai()));          
+         rs.setValue(Integer.parseInt(p.getNilai()), ""+p.getNama(), "Pekan ke-"+p.getPekan());
         }
         return rs;
     }
 
-    private JFreeChart createChart(PieDataset dataset, String title) {
+    private JFreeChart createChart(CategoryDataset dataset1, String title) {
 
-        JFreeChart chart = ChartFactory.createPieChart3D(title, // chart title
-                dataset, // data
-                true, // include legend
-                true,
-                false);
+        JFreeChart chart = ChartFactory.createBarChart3D(title, title, title, dataset1, PlotOrientation.VERTICAL, rootPaneCheckingEnabled, rootPaneCheckingEnabled, rootPaneCheckingEnabled);
 
-        PiePlot3D plot = (PiePlot3D) chart.getPlot();
-        plot.setStartAngle(290);
-        plot.setDirection(Rotation.CLOCKWISE);
+
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        //plot.setDirection(Rotation.CLOCKWISE);
         plot.setForegroundAlpha(0.5f);
         return chart;
     }
