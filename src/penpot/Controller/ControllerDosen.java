@@ -14,6 +14,7 @@ import java.util.List;
 import penpot.Koneksi.JembatanLogin;
 import penpot.Model.Dosen;
 import penpot.Model.Mahasiswa;
+import penpot.Model.Proyek;
 
 /**
  *
@@ -22,6 +23,22 @@ import penpot.Model.Mahasiswa;
 public class ControllerDosen {
     private Connection conn = JembatanLogin.getMyLgn().getConnDB();
     private String query;
+    
+     public Dosen getData(String nip) throws SQLException {
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        Dosen d = new Dosen();
+        query = "select nip, nama from dosen "
+                + "where nip ='"+nip+"'";
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {
+            
+            d.setNip(rs.getString("nip"));
+            d.setNama(rs.getString("nama"));
+            
+        }
+
+        return d;
+    }
     
     public Mahasiswa getDataDepe(String nim) throws SQLException {
         Mahasiswa m = new Mahasiswa();
@@ -84,6 +101,20 @@ public class ControllerDosen {
             }
         
         return listDsn;
+    }
+     
+    public List<Proyek> getAllKelompk(String nip) throws SQLException{
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        query = "select judul from proyek join dosen using (nip) where nip='"+nip+"'"
+                + "order by nip asc";
+        ResultSet rs = st.executeQuery(query);
+        List<Proyek> listPro=new ArrayList<Proyek>();
+        Proyek pro=new Proyek();
+        while(rs.next()){
+            pro.setJudul(rs.getString("judul"));
+            listPro.add(pro);
+        }
+        return listPro;
     }
      
      public void update(Dosen d) throws SQLException {

@@ -25,10 +25,10 @@ import penpot.Model.pekanMhs;
  *
  * @author haluan
  */
-public class PieChart extends JFrame {
+public class BarChart extends JFrame {
 
     private List<pekanMhs> recordPekanMhs = new ArrayList<>();
-    public PieChart(List<pekanMhs> lp) {
+    public BarChart(List<pekanMhs> lp) {
         super("STATISTIK");
         recordPekanMhs=lp;
         final CategoryDataset dataset1 = createDataset(recordPekanMhs);

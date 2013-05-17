@@ -5,7 +5,9 @@
 package penpot.Controller;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import penpot.Koneksi.JembatanLogin;
 import penpot.Model.Dosen;
 import penpot.Model.Mahasiswa;
@@ -28,10 +30,25 @@ public class kelolaBaru {
      
      public void updatePassKaprodi(Dosen d) throws SQLException{
           PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                + "dosen set password=? where nip=?");
-        
+                + "kaprodi set password=? where nip=?");        
         st.setString(1, d.getPassword());
         st.setString(2, d.getNip());
         st.executeUpdate();
      }
+     
+     public Dosen getData(String nip) throws SQLException {
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        Dosen d = new Dosen();
+        String query = "select nip, nama from kaprodi "
+                + "where nip ='"+nip+"'";
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {
+            
+            d.setNip(rs.getString("nip"));
+            d.setNama(rs.getString("nama"));
+            
+        }
+
+        return d;
+    }
 }

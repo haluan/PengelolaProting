@@ -4,6 +4,8 @@
  */
 package penpot.Model;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author haluan
@@ -53,7 +55,13 @@ public class Mahasiswa extends Proyek{
     }
 
     public void setNim(String nim) {
+        
+        try{
+        Integer.parseInt(nim);
         this.nim = nim;
+        }catch (Exception ex){
+            JOptionPane.showMessageDialog(null, "Tolong Masukan Angka");
+        }
     }
 
     public String getNama() {

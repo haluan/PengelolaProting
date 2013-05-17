@@ -66,7 +66,7 @@ public class ControllerMahasiswa {
         st.setString(3, m.getPassword());
         st.setString(4, m.getKelas());
         st.setString(5, m.getStatus());
-        st.setString(6, m.getStatus());
+        st.setString(6, m.getJenisKelamin());
         st.setString(7, m.getJabatan());
         st.executeUpdate();
         return m;
@@ -154,7 +154,7 @@ public class ControllerMahasiswa {
     
     public void updatePassMhs(Mahasiswa m) throws SQLException{
           PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                + "dosen set password=? where nim=?");
+                + "mahasiswa set password=? where nim=?");
         
         st.setString(1, m.getPassword());
         st.setString(2, m.getNim());

@@ -4,6 +4,8 @@
  */
 package penpot.Model;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author haluan
@@ -16,7 +18,12 @@ public class Pegawai extends Orang{
     }
 
     public void setNip(String nip) {
+        try{
+        Integer.parseInt(nip);
         this.nip = nip;
+        }catch (Exception ex){
+            JOptionPane.showMessageDialog(null, "Tolong Masukan Angka");
+        }
     }
 
   

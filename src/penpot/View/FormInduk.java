@@ -5,8 +5,10 @@
 package penpot.View;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,11 +31,15 @@ import penpot.Model.Proyek;
 import penpot.Controller.ControllerAdmin;
 import penpot.Controller.ControllerDosen;
 import penpot.Controller.ControllerMahasiswa;
+import penpot.Controller.ControllerPekanKlmpk;
 import penpot.Controller.ControllerPekanMhs;
 import penpot.Controller.ControllerProyek;
+import penpot.Controller.KelasController;
 import penpot.Controller.kelolaBaru;
 import penpot.Controller.prosesMasuk;
 import penpot.Controller.prosesPesan;
+import penpot.Model.Kelas;
+import penpot.Model.pekanKlmpk;
 import penpot.Model.pekanMhs;
 
 /**
@@ -47,15 +54,21 @@ public class FormInduk extends javax.swing.JFrame {
     //Instansiasi Model
     private Pesan pesaN = new Pesan();
     private Mahasiswa mhs = new Mahasiswa();
+    private Dosen dosenisme = new Dosen();
+    private Admin adminisme = new Admin();
+    Proyek proy = new Proyek();
     private static Proyek pro = new Proyek();
     //Record u/ tabel
     private List<Pesan> recordMasuk = new ArrayList<>();
     private List<Pesan> recordKeluar = new ArrayList<>();
     private List<Mahasiswa> recordSiswa = new ArrayList<>();
     private List<Dosen> recordDosen = new ArrayList<>();
+    private List<Admin> recordadmin = new ArrayList<>();
     private List<Mahasiswa> recordTemanKelompok = new ArrayList<>();
     private List<pekanMhs> recordPekanMhs = new ArrayList<>();
-    private List<Proyek> recordProyek = new ArrayList<>();
+    private List<pekanKlmpk> recordPekanKlpk = new ArrayList<>();
+    private List<Proyek> recordProyekXX = new ArrayList<>();
+    private List<Proyek> recordProyekC = new ArrayList<>();
     private List<Proyek> recordProyeks = new ArrayList<>();
     private List<Proyek> recordProyekI = new ArrayList<>();
     private List<Proyek> recordProyekII = new ArrayList<>();
@@ -68,6 +81,7 @@ public class FormInduk extends javax.swing.JFrame {
     private kelolaBaru kb = new kelolaBaru();
     private prosesMasuk posmas = new prosesMasuk();
     private ControllerPekanMhs cpm = new ControllerPekanMhs();
+    private ControllerPekanKlmpk cpk = new ControllerPekanKlmpk();
     //variabel tambahan
     private int row;
     private static int seen;
@@ -78,12 +92,13 @@ public class FormInduk extends javax.swing.JFrame {
     private Thread t1;
     private int sinyalemen;
     private int sinyalemenDaftar;
-    private boolean dosenExist=false;
+    private boolean dosenExist = false;
 
     public FormInduk() {
         initComponents();
         this.peringatan1();
         this.setTitle("APPT");
+        this.setSize(1350, 700);
         newMail.setSize(600, 400);
         bacaPsnMasukMhs.setSize(600, 400);
         editMahasiswa.setSize(400, 300);
@@ -94,9 +109,11 @@ public class FormInduk extends javax.swing.JFrame {
 
         //pekanMhs.addActionListener(new comboxNilMhs());
         pekanMhs.setModel(new DefaultComboBoxModel(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}));
-
+        pekanMhs1.setModel(new DefaultComboBoxModel(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}));
         statusDaftar.addActionListener(new comboxDaftar());
         statusDaftar.setModel(new DefaultComboBoxModel(new String[]{"mahasiswa", "kaprodi", "dosen", "admin"}));
+        jenisKelamin.setModel(new DefaultComboBoxModel(new String[]{"L", "P"}));
+        tingkatMhs.setModel(new DefaultComboBoxModel(new String[]{"I", "II"}));
         t1.start();
     }
 
@@ -147,6 +164,25 @@ public class FormInduk extends javax.swing.JFrame {
         }
     }
 
+    void isiTabelPenilaianKelompok(String nip) {
+        try {
+            int x = 0;
+            recordProyekXX = cp.getAllDOsen(nip);
+            Object data[][] = new Object[recordProyekXX.size()][3];
+            for (Proyek p : recordProyekXX) {
+                data[x][0] = p.getJudul();
+                data[x][1] = p.getTingkat();
+                data[x][2] = p.getTahunAkademik();
+                x++;
+            }
+            String judul[] = {"Judul", "Tingkat", "Tahun Akademik"};
+            penilaianKelompok.setModel(new DefaultTableModel(data, judul));
+            jScrollPane30.setViewportView(penilaianKelompok);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     void isiTabeSiswa() {
         int x = 0;
         Object data[][] = new Object[recordSiswa.size()][6];
@@ -164,6 +200,20 @@ public class FormInduk extends javax.swing.JFrame {
         jScrollPane7.setViewportView(tabelSiswaAdmin);
     }
 
+    private boolean CekKonfirmasi(String satu, String dua) {
+        boolean temp = false;
+        if (satu.length() > 6 && dua.length() > 6) {
+            if (satu.equals(dua)) {
+                temp = true;
+            } else {
+                JOptionPane.showMessageDialog(mailContent, "Validasi Gagal");
+            }
+        } else {
+            JOptionPane.showMessageDialog(mailContent, "Panjang Karakter kurang dari 6");
+        }
+        return temp;
+    }
+
     void isiTabelPekanMhs() {
         int x = 0;
         Object data[][] = new Object[recordPekanMhs.size()][2];
@@ -175,6 +225,20 @@ public class FormInduk extends javax.swing.JFrame {
         String judul[] = {"pekan", "nilai"};
         tabPekanMhs.setModel(new DefaultTableModel(data, judul));
         jScrollPane14.setViewportView(tabPekanMhs);
+    }
+
+    void isiTabelPekanKlpk() {
+        int x = 0;
+
+        Object data[][] = new Object[recordPekanKlpk.size()][2];
+        for (pekanKlmpk p : recordPekanKlpk) {
+            data[x][0] = p.getPekan();
+            data[x][1] = p.getNilai();
+            x++;
+        }
+        String judul[] = {"pekan", "nilai kelompok"};
+        tabPekanMhs1.setModel(new DefaultTableModel(data, judul));
+        jScrollPane31.setViewportView(tabPekanMhs1);
     }
 
     void isiTabeldataNilaiMhs() {
@@ -224,6 +288,8 @@ public class FormInduk extends javax.swing.JFrame {
         }
         String judul[] = {"id", "judul", "tingkat", "tahun akademik", "dosen pembimbing", "status", "jumlah"};
         tblPt1SetujuKapro.setModel(new DefaultTableModel(dataI, judul));
+        tkt1admin.setModel(new DefaultTableModel(dataI, judul));
+        jScrollPane27.setViewportView(tkt1admin);
         jScrollPane16.setViewportView(tblPt1SetujuKapro);
 
     }
@@ -245,6 +311,8 @@ public class FormInduk extends javax.swing.JFrame {
 
         tblPt2SetujuKapro.setModel(new DefaultTableModel(dataII, judul));
         jScrollPane17.setViewportView(tblPt2SetujuKapro);
+        tkt2admin.setModel(new DefaultTableModel(dataII, judul));
+        jScrollPane28.setViewportView(tkt2admin);
 
     }
 
@@ -287,8 +355,8 @@ public class FormInduk extends javax.swing.JFrame {
 
     void isiTabelProyek() {
         int x = 0;
-        Object data[][] = new Object[recordProyek.size()][7];
-        for (Proyek p : recordProyek) {
+        Object data[][] = new Object[recordProyekC.size()][7];
+        for (Proyek p : recordProyekC) {
             data[x][1] = p.getJudul();
             data[x][2] = p.getTingkat();
             data[x][3] = p.getTahunAkademik();
@@ -299,7 +367,8 @@ public class FormInduk extends javax.swing.JFrame {
 
             x++;
         }
-        String judul[] = {"id", "judul", "tingkat", "tahun akademik", "dosen pembimbing", "status", "jumlah"};
+        String judul[] = {"id", "judul", "tingkat", "tahun akademik",
+            "dosen pembimbing", "status", "jumlah"};
 
 
         tabelSiapSetuju.setModel(new DefaultTableModel(data, judul));
@@ -334,7 +403,7 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][5] = m.getJabatan();
             x++;
         }
-        String judul[] = {"judul","nim", "nama", "kelas", "status", "jabatan"};
+        String judul[] = {"judul", "nim", "nama", "kelas", "status", "jabatan"};
         bimbinganDosen.setModel(new DefaultTableModel(data, judul));
         jScrollPane13.setViewportView(bimbinganDosen);
     }
@@ -352,6 +421,24 @@ public class FormInduk extends javax.swing.JFrame {
         jScrollPane8.setViewportView(tabelDosenAdmin);
     }
 
+    void isiTabeladmin() {
+        try {
+            int x = 0;
+            recordadmin = ca.getAll();
+            Object data[][] = new Object[recordadmin.size()][2];
+            for (Admin d : recordadmin) {
+                data[x][0] = d.getNip();
+                data[x][1] = d.getNama();
+                x++;
+            }
+            String judul[] = {"nip", "nama"};
+            tabelAdminAdmin.setModel(new DefaultTableModel(data, judul));
+            jScrollPane9.setViewportView(tabelAdminAdmin);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void loadPesan(String status, int temp) throws SQLException {
         recordMasuk = prosespesan.getAllMasuk(onUsed, status, temp);
         recordKeluar = prosespesan.getAllKeluar(onUsed, status, temp);
@@ -359,11 +446,12 @@ public class FormInduk extends javax.swing.JFrame {
         isiTabelKeluar(status);
     }
 
-    private class comboxNilMhs implements ActionListener {
+    private class comboxNilMhs0 implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
+            //To change body of generated methods, choose Tools | Templates.
         }
     }
 
@@ -391,10 +479,12 @@ public class FormInduk extends javax.swing.JFrame {
         if (jenisLogin.getSelectedIndex() == 0) {
             sinyalemen = 0;
             jLabel48.setText("nim");
+
         }
         if (jenisLogin.getSelectedIndex() == 1) {
             sinyalemen = 1;
             jLabel48.setText("nip");
+
         }
         if (jenisLogin.getSelectedIndex() == 2) {
             sinyalemen = 2;
@@ -403,6 +493,7 @@ public class FormInduk extends javax.swing.JFrame {
         if (jenisLogin.getSelectedIndex() == 3) {
             sinyalemen = 3;
             jLabel48.setText("nip");
+
         }
 
     }
@@ -412,25 +503,35 @@ public class FormInduk extends javax.swing.JFrame {
             sinyalemenDaftar = 0;//siswa
             idDaftar.setText("nim");
             kelasBaru.setText("kelas");
-            kelasDaftarBaru.show();
+            tingkatMhs.show();
+            jComboBox2.show();
+            tingkatMhs.show();
+            jLabel80.show();
         }
         if (statusDaftar.getSelectedIndex() == 1) {
             sinyalemenDaftar = 1;//kaprodi
             idDaftar.setText("nip");
             kelasBaru.setText("");
-            kelasDaftarBaru.hide();
+            tingkatMhs.hide();
+
+            jLabel80.hide();
+            jComboBox2.hide();
         }
         if (statusDaftar.getSelectedIndex() == 2) {
             sinyalemenDaftar = 2;//dosen
             idDaftar.setText("nip");
             kelasBaru.setText("");
-            kelasDaftarBaru.hide();
+            tingkatMhs.hide();
+            jLabel80.hide();
+            jComboBox2.hide();
         }
         if (statusDaftar.getSelectedIndex() == 3) {
             sinyalemenDaftar = 3;//admin
             idDaftar.setText("nip");
             kelasBaru.setText("");
-            kelasDaftarBaru.hide();
+            tingkatMhs.hide();
+            jLabel80.hide();
+            jComboBox2.hide();
         }
     }
 
@@ -611,6 +712,16 @@ public class FormInduk extends javax.swing.JFrame {
         jScrollPane25 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
         ambilProjek = new javax.swing.JButton();
+        kelompokNilai = new javax.swing.JFrame();
+        jPanel41 = new javax.swing.JPanel();
+        pekanMhs1 = new javax.swing.JComboBox();
+        namaMhsNilai1 = new javax.swing.JLabel();
+        nilaiPekanMhs1 = new javax.swing.JTextField();
+        jLabel38 = new javax.swing.JLabel();
+        inputNilaiMhsPkn1 = new javax.swing.JButton();
+        jScrollPane31 = new javax.swing.JScrollPane();
+        tabPekanMhs1 = new javax.swing.JTable();
+        nilaiTotal1 = new javax.swing.JLabel();
         induk = new javax.swing.JPanel();
         jPanel34 = new javax.swing.JPanel();
         jPanel36 = new javax.swing.JPanel();
@@ -661,6 +772,12 @@ public class FormInduk extends javax.swing.JFrame {
         namaKelompokMhs = new javax.swing.JLabel();
         upload = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
+        jScrollPane29 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jLabel84 = new javax.swing.JLabel();
+        jButton36 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jButton37 = new javax.swing.JButton();
         pesan = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         tabMailMhs = new javax.swing.JTabbedPane();
@@ -676,6 +793,15 @@ public class FormInduk extends javax.swing.JFrame {
         refreshPesanMhs = new javax.swing.JToggleButton();
         setelanMhs = new javax.swing.JPanel();
         jLabel41 = new javax.swing.JLabel();
+        jLabel64 = new javax.swing.JLabel();
+        jLabel65 = new javax.swing.JLabel();
+        jLabel66 = new javax.swing.JLabel();
+        jLabel67 = new javax.swing.JLabel();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jPasswordField1 = new javax.swing.JPasswordField();
+        jPasswordField2 = new javax.swing.JPasswordField();
         dosen = new javax.swing.JPanel();
         navDos = new javax.swing.JPanel();
         jButton12 = new javax.swing.JButton();
@@ -707,14 +833,24 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel24 = new javax.swing.JLabel();
         jScrollPane26 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        nilaiKelompok = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
         jLabel25 = new javax.swing.JLabel();
+        jTextField5 = new javax.swing.JTextField();
+        jLabel68 = new javax.swing.JLabel();
+        jLabel69 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
+        jLabel70 = new javax.swing.JLabel();
+        jPasswordField3 = new javax.swing.JPasswordField();
+        jLabel71 = new javax.swing.JLabel();
+        jPasswordField4 = new javax.swing.JPasswordField();
+        jButton31 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel14 = new javax.swing.JPanel();
-        jLabel38 = new javax.swing.JLabel();
+        jScrollPane30 = new javax.swing.JScrollPane();
+        penilaianKelompok = new javax.swing.JTable();
         jPanel13 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -755,6 +891,15 @@ public class FormInduk extends javax.swing.JFrame {
         tblPt2SetujuKapro = new javax.swing.JTable();
         jPanel8 = new javax.swing.JPanel();
         jLabel27 = new javax.swing.JLabel();
+        jTextField7 = new javax.swing.JTextField();
+        jLabel72 = new javax.swing.JLabel();
+        jLabel73 = new javax.swing.JLabel();
+        jLabel74 = new javax.swing.JLabel();
+        jLabel75 = new javax.swing.JLabel();
+        jPasswordField5 = new javax.swing.JPasswordField();
+        jPasswordField6 = new javax.swing.JPasswordField();
+        jTextField8 = new javax.swing.JTextField();
+        jButton33 = new javax.swing.JButton();
         admin = new javax.swing.JPanel();
         navKap1 = new javax.swing.JPanel();
         jButton21 = new javax.swing.JButton();
@@ -770,8 +915,24 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel29 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
+        jLabel76 = new javax.swing.JLabel();
+        jTextField9 = new javax.swing.JTextField();
+        jLabel77 = new javax.swing.JLabel();
+        jTextField10 = new javax.swing.JTextField();
+        jLabel78 = new javax.swing.JLabel();
+        jPasswordField7 = new javax.swing.JPasswordField();
+        jLabel79 = new javax.swing.JLabel();
+        jPasswordField8 = new javax.swing.JPasswordField();
+        jButton34 = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
+        jTabbedPane6 = new javax.swing.JTabbedPane();
+        jPanel35 = new javax.swing.JPanel();
+        jScrollPane27 = new javax.swing.JScrollPane();
+        tkt1admin = new javax.swing.JTable();
+        jPanel40 = new javax.swing.JPanel();
+        jScrollPane28 = new javax.swing.JScrollPane();
+        tkt2admin = new javax.swing.JTable();
         jPanel24 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         namaDaftar = new javax.swing.JLabel();
@@ -784,7 +945,15 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel39 = new javax.swing.JLabel();
         statusDaftar = new javax.swing.JComboBox();
         kelasBaru = new javax.swing.JLabel();
-        kelasDaftarBaru = new javax.swing.JTextField();
+        tingkatMhs = new javax.swing.JComboBox();
+        jLabel80 = new javax.swing.JLabel();
+        jLabel81 = new javax.swing.JLabel();
+        jenisKelamin = new javax.swing.JComboBox();
+        jLabel82 = new javax.swing.JLabel();
+        jLabel83 = new javax.swing.JLabel();
+        namaKelas = new javax.swing.JTextField();
+        jButton35 = new javax.swing.JButton();
+        jComboBox2 = new javax.swing.JComboBox();
         jPanel25 = new javax.swing.JPanel();
         jTabbedPane5 = new javax.swing.JTabbedPane();
         jPanel26 = new javax.swing.JPanel();
@@ -1603,6 +1772,104 @@ public class FormInduk extends javax.swing.JFrame {
             .addComponent(jPanel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        pekanMhs1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        namaMhsNilai1.setText("jLabel16");
+
+        jLabel38.setText("nilai");
+
+        inputNilaiMhsPkn1.setText("input");
+        inputNilaiMhsPkn1.setPreferredSize(new java.awt.Dimension(73, 23));
+        inputNilaiMhsPkn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputNilaiMhsPkn1ActionPerformed(evt);
+            }
+        });
+
+        tabPekanMhs1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane31.setViewportView(tabPekanMhs1);
+
+        nilaiTotal1.setText("jLabel64");
+
+        javax.swing.GroupLayout jPanel41Layout = new javax.swing.GroupLayout(jPanel41);
+        jPanel41.setLayout(jPanel41Layout);
+        jPanel41Layout.setHorizontalGroup(
+            jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel41Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel41Layout.createSequentialGroup()
+                        .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane31, javax.swing.GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE)
+                            .addGroup(jPanel41Layout.createSequentialGroup()
+                                .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel41Layout.createSequentialGroup()
+                                        .addComponent(pekanMhs1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(60, 60, 60)
+                                        .addComponent(namaMhsNilai1))
+                                    .addGroup(jPanel41Layout.createSequentialGroup()
+                                        .addComponent(jLabel38)
+                                        .addGap(68, 68, 68)
+                                        .addComponent(nilaiPekanMhs1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(jPanel41Layout.createSequentialGroup()
+                        .addComponent(inputNilaiMhsPkn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(nilaiTotal1)
+                        .addGap(157, 157, 157))))
+        );
+        jPanel41Layout.setVerticalGroup(
+            jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel41Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pekanMhs1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(namaMhsNilai1))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nilaiPekanMhs1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel38))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(inputNilaiMhsPkn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nilaiTotal1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane31, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout kelompokNilaiLayout = new javax.swing.GroupLayout(kelompokNilai.getContentPane());
+        kelompokNilai.getContentPane().setLayout(kelompokNilaiLayout);
+        kelompokNilaiLayout.setHorizontalGroup(
+            kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 774, Short.MAX_VALUE)
+            .addGroup(kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(kelompokNilaiLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        kelompokNilaiLayout.setVerticalGroup(
+            kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 329, Short.MAX_VALUE)
+            .addGroup(kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(kelompokNilaiLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
@@ -1621,7 +1888,7 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel36Layout.createSequentialGroup()
                 .addGap(109, 109, 109)
                 .addComponent(jLabel1)
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
         jPanel36Layout.setVerticalGroup(
             jPanel36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1716,7 +1983,7 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel38Layout.setVerticalGroup(
             jPanel38Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel38Layout.createSequentialGroup()
-                .addContainerGap(57, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(peringatanMasuk)
                 .addGap(18, 18, 18)
                 .addComponent(jenisLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1840,7 +2107,7 @@ public class FormInduk extends javax.swing.JFrame {
         jButton9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton9.setForeground(new java.awt.Color(255, 255, 255));
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/load_upload.png"))); // NOI18N
-        jButton9.setText("upload");
+        jButton9.setText("dokumen");
         jButton9.setBorderPainted(false);
         jButton9.setContentAreaFilled(false);
         jButton9.setName(""); // NOI18N
@@ -1910,12 +2177,13 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(navigasiLayout.createSequentialGroup()
+                        .addGap(19, 19, 19)
                         .addGroup(navigasiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tgl1)
                             .addComponent(waktu1))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         navigasiLayout.setVerticalGroup(
@@ -1998,7 +2266,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(statistikNilaiMhs)
                 .addGap(113, 113, 113)
                 .addComponent(jScrollPane15, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(391, Short.MAX_VALUE))
+                .addContainerGap(345, Short.MAX_VALUE))
         );
 
         konten.add(nilai, "nilai");
@@ -2025,17 +2293,15 @@ public class FormInduk extends javax.swing.JFrame {
         projek.setLayout(projekLayout);
         projekLayout.setHorizontalGroup(
             projekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane18, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(projekLayout.createSequentialGroup()
                 .addGroup(projekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(projekLayout.createSequentialGroup()
-                        .addGap(447, 447, 447)
-                        .addComponent(jLabel10))
                     .addGroup(projekLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jLabel16))
                     .addGroup(projekLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(447, 447, 447)
+                        .addComponent(jLabel10)))
                 .addContainerGap(492, Short.MAX_VALUE))
         );
         projekLayout.setVerticalGroup(
@@ -2043,11 +2309,11 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(projekLayout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jLabel10)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(120, 120, 120)
+                .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(73, 73, 73)
                 .addComponent(jLabel16)
-                .addGap(0, 123, Short.MAX_VALUE))
+                .addGap(0, 69, Short.MAX_VALUE))
         );
 
         konten.add(projek, "projek");
@@ -2116,29 +2382,85 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(namaKelompokMhs))
                 .addGap(77, 77, 77)
                 .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 418, Short.MAX_VALUE))
+                .addGap(0, 372, Short.MAX_VALUE))
         );
 
         konten.add(kelompok, "kelompok");
 
         jLabel12.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel12.setText("UPLOAD");
+        jLabel12.setText("DOKUMEN");
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane29.setViewportView(jTable2);
+
+        jLabel84.setText("upload");
+
+        jButton36.setText("upload");
+        jButton36.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton36ActionPerformed(evt);
+            }
+        });
+
+        jButton37.setText("submit");
+        jButton37.setEnabled(false);
+        jButton37.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton37ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout uploadLayout = new javax.swing.GroupLayout(upload);
         upload.setLayout(uploadLayout);
         uploadLayout.setHorizontalGroup(
             uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(uploadLayout.createSequentialGroup()
-                .addGap(483, 483, 483)
-                .addComponent(jLabel12)
-                .addContainerGap(459, Short.MAX_VALUE))
+                .addGroup(uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(uploadLayout.createSequentialGroup()
+                        .addGap(483, 483, 483)
+                        .addComponent(jLabel12))
+                    .addGroup(uploadLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(57, 57, 57)
+                        .addGroup(uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel84)
+                            .addGroup(uploadLayout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton36))
+                            .addComponent(jButton37))))
+                .addContainerGap(353, Short.MAX_VALUE))
         );
         uploadLayout.setVerticalGroup(
             uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(uploadLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel12)
-                .addContainerGap(675, Short.MAX_VALUE))
+                .addGroup(uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(uploadLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(uploadLayout.createSequentialGroup()
+                        .addGap(55, 55, 55)
+                        .addComponent(jLabel84)
+                        .addGap(36, 36, 36)
+                        .addGroup(uploadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton36))
+                        .addGap(36, 36, 36)
+                        .addComponent(jButton37)))
+                .addContainerGap(184, Short.MAX_VALUE))
         );
 
         konten.add(upload, "upload");
@@ -2170,10 +2492,10 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 988, Short.MAX_VALUE)
                     .addGroup(jPanel21Layout.createSequentialGroup()
                         .addComponent(totalInMail)
-                        .addGap(0, 891, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel21Layout.setVerticalGroup(
@@ -2181,9 +2503,9 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(totalInMail)
-                .addGap(24, 24, 24))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         tabMailMhs.addTab("masuk", jPanel21);
@@ -2219,14 +2541,14 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel22Layout.setVerticalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
-                .addContainerGap(519, Short.MAX_VALUE)
+                .addContainerGap(393, Short.MAX_VALUE)
                 .addComponent(totalOutMail)
                 .addGap(21, 21, 21))
             .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel22Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(168, Short.MAX_VALUE)))
+                    .addContainerGap(42, Short.MAX_VALUE)))
         );
 
         tabMailMhs.addTab("keluar", jPanel22);
@@ -2282,13 +2604,34 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(pesanBaruMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(refreshPesanMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(tabMailMhs))
+                .addComponent(tabMailMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(80, Short.MAX_VALUE))
         );
 
         konten.add(pesan, "pesan");
 
         jLabel41.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
         jLabel41.setText("SETELAN");
+
+        jLabel64.setText("Nama :");
+
+        jLabel65.setText("NIM :");
+
+        jLabel66.setText("Password :");
+
+        jLabel67.setText("Konfirmasi Password :");
+
+        jTextField3.setEditable(false);
+
+        jTextField4.setEditable(false);
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton1.setText("save");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout setelanMhsLayout = new javax.swing.GroupLayout(setelanMhs);
         setelanMhs.setLayout(setelanMhsLayout);
@@ -2298,13 +2641,51 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap(475, Short.MAX_VALUE)
                 .addComponent(jLabel41)
                 .addGap(452, 452, 452))
+            .addGroup(setelanMhsLayout.createSequentialGroup()
+                .addGap(302, 302, 302)
+                .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(setelanMhsLayout.createSequentialGroup()
+                        .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel65)
+                            .addComponent(jLabel64)
+                            .addComponent(jLabel66))
+                        .addGap(18, 18, 18)
+                        .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField4)
+                            .addComponent(jTextField3)
+                            .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)))
+                    .addGroup(setelanMhsLayout.createSequentialGroup()
+                        .addComponent(jLabel67)
+                        .addGap(18, 18, 18)
+                        .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                            .addComponent(jPasswordField2))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         setelanMhsLayout.setVerticalGroup(
             setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(setelanMhsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel41)
-                .addContainerGap(675, Short.MAX_VALUE))
+                .addGap(36, 36, 36)
+                .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel64)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel65)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel66)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(setelanMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel67)
+                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(373, Short.MAX_VALUE))
         );
 
         konten.add(setelanMhs, "setelanMhs");
@@ -2325,7 +2706,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(navigasi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(konten, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2369,7 +2750,7 @@ public class FormInduk extends javax.swing.JFrame {
         jButton15.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton15.setForeground(new java.awt.Color(255, 255, 255));
         jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/penpot/img/notes.png"))); // NOI18N
-        jButton15.setText("penilaian");
+        jButton15.setText("dokumen");
         jButton15.setContentAreaFilled(false);
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2419,9 +2800,12 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tgl2)
-                    .addComponent(waktu2)
-                    .addComponent(jButton18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(navDosLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(navDosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tgl2)
+                            .addComponent(waktu2))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         navDosLayout.setVerticalGroup(
@@ -2634,7 +3018,7 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel24.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel24.setText("PENILAIAN");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        nilaiKelompok.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -2645,7 +3029,7 @@ public class FormInduk extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane26.setViewportView(jTable1);
+        jScrollPane26.setViewportView(nilaiKelompok);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -2658,7 +3042,7 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane26, javax.swing.GroupLayout.PREFERRED_SIZE, 1081, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2675,21 +3059,80 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel25.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel25.setText("SETELAN");
 
+        jTextField5.setEditable(false);
+
+        jLabel68.setText("Nama :");
+
+        jLabel69.setText("NIM :");
+
+        jTextField6.setEditable(false);
+
+        jLabel70.setText("Password :");
+
+        jLabel71.setText("Konfirmasi Password :");
+
+        jButton31.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton31.setText("save");
+        jButton31.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton31ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(533, Short.MAX_VALUE)
-                .addComponent(jLabel25)
-                .addGap(469, 469, 469))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap(390, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel25)
+                        .addGap(469, 469, 469))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel69)
+                                    .addComponent(jLabel68)
+                                    .addComponent(jLabel70))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField5)
+                                    .addComponent(jTextField6)
+                                    .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addComponent(jLabel71)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButton31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jPasswordField4, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(441, 441, 441))))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel25)
-                .addContainerGap(595, Short.MAX_VALUE))
+                .addGap(44, 44, 44)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel68)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel69)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel70)
+                    .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel71)
+                    .addComponent(jPasswordField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48)
+                .addComponent(jButton31, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(331, Short.MAX_VALUE))
         );
 
         kontenDos.add(jPanel6, "setelan");
@@ -2699,7 +3142,18 @@ public class FormInduk extends javax.swing.JFrame {
 
         jTabbedPane1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jLabel38.setText("melihat progres kelompok binaan");
+        penilaianKelompok.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane30.setViewportView(penilaianKelompok);
 
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
@@ -2707,15 +3161,15 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel38)
-                .addContainerGap(838, Short.MAX_VALUE))
+                .addComponent(jScrollPane30, javax.swing.GroupLayout.DEFAULT_SIZE, 984, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel14Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jLabel38)
-                .addContainerGap(484, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jScrollPane30, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("progres binaan", jPanel14);
@@ -2875,7 +3329,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(navDos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(dosenLayout.createSequentialGroup()
                         .addComponent(kontenDos, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 94, Short.MAX_VALUE)))
+                        .addGap(0, 48, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -2936,7 +3390,7 @@ public class FormInduk extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, navKapLayout.createSequentialGroup()
                         .addGroup(navKapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton19, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton19, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
                             .addComponent(jButton17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton20, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(23, 23, 23))))
@@ -2952,7 +3406,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 459, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 413, Short.MAX_VALUE)
                 .addComponent(jButton20, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -2967,7 +3421,7 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel30Layout.setHorizontalGroup(
             jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel30Layout.createSequentialGroup()
-                .addContainerGap(374, Short.MAX_VALUE)
+                .addContainerGap(318, Short.MAX_VALUE)
                 .addComponent(jLabel40)
                 .addGap(288, 288, 288))
         );
@@ -3115,7 +3569,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 1017, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(72, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3132,20 +3586,78 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel27.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel27.setText("SETELAN");
 
+        jTextField7.setEditable(false);
+
+        jLabel72.setText("Nama :");
+
+        jLabel73.setText("NIM :");
+
+        jLabel74.setText("Password :");
+
+        jLabel75.setText("Konfirmasi Password :");
+
+        jTextField8.setEditable(false);
+
+        jButton33.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton33.setText("save");
+        jButton33.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton33ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(542, Short.MAX_VALUE)
+                .addContainerGap(486, Short.MAX_VALUE)
                 .addComponent(jLabel27)
                 .addGap(467, 467, 467))
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(400, 400, 400)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel73)
+                            .addComponent(jLabel72)
+                            .addComponent(jLabel74))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField7)
+                            .addComponent(jTextField8)
+                            .addComponent(jPasswordField6, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel75)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPasswordField5, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addComponent(jLabel27)
-                .addGap(0, 604, Short.MAX_VALUE))
+                .addGap(28, 28, 28)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel72)
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel73)
+                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel74)
+                    .addComponent(jPasswordField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel75)
+                    .addComponent(jPasswordField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48)
+                .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 356, Short.MAX_VALUE))
         );
 
         kontenKap.add(jPanel8, "setelanKap");
@@ -3156,7 +3668,7 @@ public class FormInduk extends javax.swing.JFrame {
             kaprodiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(kaprodiLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(navKap, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(navKap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(kontenKap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -3169,7 +3681,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(navKap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(kaprodiLayout.createSequentialGroup()
                         .addComponent(kontenKap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 96, Short.MAX_VALUE)))
+                        .addGap(0, 50, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -3262,7 +3774,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addGroup(navKap1Layout.createSequentialGroup()
                         .addGroup(navKap1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton24, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
                             .addComponent(jButton22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -3294,7 +3806,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jButton22, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(daftarUser, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 182, Short.MAX_VALUE)
                 .addComponent(jButton23, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -3318,7 +3830,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addComponent(jLabel29)
-                .addGap(0, 700, Short.MAX_VALUE))
+                .addGap(0, 654, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel10, "dokumenAd");
@@ -3326,21 +3838,80 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel30.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel30.setText("SETELAN");
 
+        jLabel76.setText("Nama :");
+
+        jTextField9.setEditable(false);
+
+        jLabel77.setText("NIM :");
+
+        jTextField10.setEditable(false);
+
+        jLabel78.setText("Password :");
+
+        jLabel79.setText("Konfirmasi Password :");
+
+        jButton34.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton34.setText("save");
+        jButton34.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton34ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGap(463, 463, 463)
-                .addComponent(jLabel30)
-                .addContainerGap(529, Short.MAX_VALUE))
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGap(463, 463, 463)
+                        .addComponent(jLabel30))
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGap(320, 320, 320)
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel77)
+                                    .addComponent(jLabel76)
+                                    .addComponent(jLabel78))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField9)
+                                    .addComponent(jTextField10)
+                                    .addComponent(jPasswordField7, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addComponent(jLabel79)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButton34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jPasswordField8, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(501, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel30)
-                .addContainerGap(689, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel76)
+                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel77)
+                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel78)
+                    .addComponent(jPasswordField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel79)
+                    .addComponent(jPasswordField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48)
+                .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(405, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel11, "setelanAd");
@@ -3350,21 +3921,92 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel28.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel28.setText("PROYEK");
 
+        tkt1admin.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane27.setViewportView(tkt1admin);
+
+        javax.swing.GroupLayout jPanel35Layout = new javax.swing.GroupLayout(jPanel35);
+        jPanel35.setLayout(jPanel35Layout);
+        jPanel35Layout.setHorizontalGroup(
+            jPanel35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel35Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel35Layout.setVerticalGroup(
+            jPanel35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel35Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane6.addTab("TINGKAT I", jPanel35);
+
+        tkt2admin.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane28.setViewportView(tkt2admin);
+
+        javax.swing.GroupLayout jPanel40Layout = new javax.swing.GroupLayout(jPanel40);
+        jPanel40.setLayout(jPanel40Layout);
+        jPanel40Layout.setHorizontalGroup(
+            jPanel40Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel40Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane28, javax.swing.GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel40Layout.setVerticalGroup(
+            jPanel40Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel40Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane28, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane6.addTab("TINGKAT II", jPanel40);
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(443, 443, 443)
-                .addComponent(jLabel28)
-                .addContainerGap(556, Short.MAX_VALUE))
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(443, 443, 443)
+                        .addComponent(jLabel28))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(138, 138, 138)
+                        .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 753, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(211, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel28)
-                .addContainerGap(689, Short.MAX_VALUE))
+                .addGap(62, 62, 62)
+                .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(291, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel9, "proyekAd");
@@ -3397,11 +4039,30 @@ public class FormInduk extends javax.swing.JFrame {
         kelasBaru.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         kelasBaru.setText("kelas");
 
-        kelasDaftarBaru.addActionListener(new java.awt.event.ActionListener() {
+        tingkatMhs.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tingkatMhs.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel80.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel80.setText("tingkat");
+
+        jLabel81.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel81.setText("jenis kelamin");
+
+        jenisKelamin.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jenisKelamin.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel82.setText("tambah kelas");
+
+        jLabel83.setText("nama kelas");
+
+        jButton35.setText("tambah");
+        jButton35.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                kelasDaftarBaruActionPerformed(evt);
+                jButton35ActionPerformed(evt);
             }
         });
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout jPanel24Layout = new javax.swing.GroupLayout(jPanel24);
         jPanel24.setLayout(jPanel24Layout);
@@ -3418,10 +4079,19 @@ public class FormInduk extends javax.swing.JFrame {
                                 .addGap(454, 454, 454)
                                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(kelasBaru)
-                                    .addComponent(jLabel7))
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel80))
                                 .addGap(18, 18, 18))
                             .addGroup(jPanel24Layout.createSequentialGroup()
-                                .addGap(474, 474, 474)
+                                .addContainerGap()
+                                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel82)
+                                    .addGroup(jPanel24Layout.createSequentialGroup()
+                                        .addComponent(jLabel83)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(namaKelas, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jButton35))
+                                .addGap(251, 251, 251)
                                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel39)
                                     .addComponent(namaDaftar)
@@ -3431,42 +4101,67 @@ public class FormInduk extends javax.swing.JFrame {
                                 .addGap(26, 26, 26)))
                         .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(statusDaftar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(idDaftarBaru, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                                .addComponent(passwordDfatarBaru, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(kelasDaftarBaru, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                                .addComponent(namaDaftarBaru, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                                .addComponent(daftarOlehAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addContainerGap(434, Short.MAX_VALUE))
+                            .addComponent(tingkatMhs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel24Layout.createSequentialGroup()
+                                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(idDaftarBaru, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(passwordDfatarBaru, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(namaDaftarBaru, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(daftarOlehAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(42, 42, 42)
+                                .addComponent(jLabel81)
+                                .addGap(18, 18, 18)
+                                .addComponent(jenisKelamin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(205, Short.MAX_VALUE))
         );
         jPanel24Layout.setVerticalGroup(
             jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel24Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addGap(97, 97, 97)
-                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel39)
-                    .addComponent(statusDaftar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(namaDaftar)
-                    .addComponent(namaDaftarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(97, 97, 97)
+                        .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel39)
+                            .addComponent(statusDaftar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(90, 90, 90)
+                        .addComponent(jLabel82)))
+                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(namaDaftar)
+                            .addComponent(namaDaftarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel81)
+                            .addComponent(jenisKelamin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel83)
+                            .addComponent(namaKelas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(idDaftar)
-                    .addComponent(idDaftarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(idDaftarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton35))
+                .addGap(51, 51, 51)
                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(passwordDfatarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(kelasDaftarBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(kelasBaru))
+                    .addComponent(kelasBaru)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tingkatMhs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel80))
+                .addGap(31, 31, 31)
                 .addComponent(daftarOlehAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(343, Short.MAX_VALUE))
+                .addContainerGap(207, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel24, "daftarAd");
@@ -3502,7 +4197,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel26Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -3535,7 +4230,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel27Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -3568,7 +4263,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel28Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -3596,10 +4291,10 @@ public class FormInduk extends javax.swing.JFrame {
             adminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(adminLayout.createSequentialGroup()
                 .addComponent(navKap1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 1152, Short.MAX_VALUE))
+                .addGap(0, 1098, Short.MAX_VALUE))
             .addGroup(adminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, adminLayout.createSequentialGroup()
-                    .addContainerGap(283, Short.MAX_VALUE)
+                    .addContainerGap(227, Short.MAX_VALUE)
                     .addComponent(kontenAd, javax.swing.GroupLayout.PREFERRED_SIZE, 1102, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -3660,9 +4355,8 @@ public class FormInduk extends javax.swing.JFrame {
 
         CardLayout cad = (CardLayout) konten.getLayout();
         cad.show(konten, "projek");
-        System.out.println(""+mhs.getIdProyek());
-        System.out.println(""+mhs.getNama());
-        if (mhs.getIdProyek()==0) {
+
+        if (mhs.getIdProyek() == 0) {
             if (mhs.getStatus().equals("II")) {
                 try {
                     recordProyekII = cp.getAllPTII();
@@ -3796,14 +4490,58 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-        kosongAwal();
-
-        this.keluar();
+        try {
+            // TODO add your handling code here:
+            jTextField3.setText("");
+            jTextField4.setText("");
+            recordPekanMhs = null;
+            isiTabeldataNilaiMhs();
+            recordProyekII = null;
+            isiTabelPilihProjMhs("II");
+            recordProyekI = null;
+            isiTabelPilihProjMhs("I");
+            namaKelompokMhs.setText("");
+            namaDosenMhs.setText("");
+            recordTemanKelompok = null;
+            isiTabelTemanKelompok();
+            recordMasuk = null;
+            recordKeluar = null;
+            isiTabelMasuk("siswa");
+            isiTabelKeluar("siswa");
+            jTextField4.setText("");
+            jTextField3.setText("");
+           
+        } catch (SQLException ex) {
+            
+        } finally {
+             kosongAwal();
+            this.keluar();
+        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // TODO add your handling code here:
+        isiTabelPenilaianKelompok(nip);
+        isiTabelPekanKlpk();
+        penilaianKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int row = penilaianKelompok.getSelectedRow();
+                if (row != -1) {
+                    proy = recordProyekXX.get(row);
+                    kelompokNilai.setSize(500, 500);
+                    namaMhsNilai1.setText(proy.getJudul());
+                    try {
+                        recordPekanKlpk = cpk.getAll(nip, proy.getIdPro());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    isiTabelPekanKlpk();
+                    System.out.println("" + proy.getIdPro() + "    " + nip);
+                    kelompokNilai.show();
+                }
+            }
+        });
 
         lihatProyekAjuan.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -3862,7 +4600,7 @@ public class FormInduk extends javax.swing.JFrame {
         }
         daftarBinaanDosen.removeAllItems();
         for (Mahasiswa mhs : lm) {
-            ls.add((mhs.getNim() + ". " + mhs.getNama()+" --"+mhs.getJudul()));
+            ls.add((mhs.getNim() + ". " + mhs.getNama() + " --" + mhs.getJudul()));
         }
         for (String s : ls) {
             daftarBinaanDosen.addItem(s);
@@ -3871,7 +4609,7 @@ public class FormInduk extends javax.swing.JFrame {
 
         pesanMasukDosen.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-               int row = pesanMasukDosen.getSelectedRow();
+                int row = pesanMasukDosen.getSelectedRow();
                 if (row != -1) {
                     sinyalHapus = 0;
                     jLabel15.setText("dari    : ");
@@ -3925,13 +4663,17 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         // TODO add your handling code here:
+        jTextField5.setText(dosenisme.getNama());
+        jTextField6.setText(dosenisme.getNip());
         CardLayout cad = (CardLayout) kontenDos.getLayout();
         cad.show(kontenDos, "setelan");
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
         // TODO add your handling code here:
-        this.dosenExist=false;
+        jTextField5.setText("");
+        jTextField6.setText("");
+        this.dosenExist = false;
         kosongAwal();
         this.keluar();
     }//GEN-LAST:event_jButton18ActionPerformed
@@ -3948,7 +4690,7 @@ public class FormInduk extends javax.swing.JFrame {
         CardLayout cad = (CardLayout) kontenKap.getLayout();
         cad.show(kontenKap, "proyekKap");
         try {
-            recordProyek = cp.getAll();
+            recordProyekC = cp.getAll();
             recordProyekI = cp.getAllPTI();
             recordProyekII = cp.getAllPTII();
         } catch (SQLException ex) {
@@ -3962,11 +4704,11 @@ public class FormInduk extends javax.swing.JFrame {
                 row = tabelSiapSetuju.getSelectedRow();
                 if (row != -1) {
                     try {
-                        recordProyek = cp.getAll();
+                        recordProyekC = cp.getAll();
                     } catch (SQLException ex) {
                         Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    pro = recordProyek.get(row);
+                    pro = recordProyekC.get(row);
                     jLabel17.setText("Judul : " + pro.getJudul());
                     jLabel18.setText("Dosen : " + pro.getNama());
                     jLabel37.setText("Tgl Pengajuan : " + pro.getAjukan());
@@ -3987,18 +4729,30 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
         // TODO add your handling code here:
+        jTextField7.setText(dosenisme.getNama());
+        jTextField8.setText(dosenisme.getNip());
         CardLayout cad = (CardLayout) kontenKap.getLayout();
         cad.show(kontenKap, "setelanKap");
     }//GEN-LAST:event_jButton19ActionPerformed
 
     private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
-        // TODO add your handling code here:
-        CardLayout cad = (CardLayout) kontenAd.getLayout();
-        cad.show(kontenAd, "proyekAd");
+        try {
+            // TODO add your handling code here:
+            CardLayout cad = (CardLayout) kontenAd.getLayout();
+            cad.show(kontenAd, "proyekAd");
+            recordProyekI = cp.getAllPTI();
+            recordProyekII = cp.getAllPTII();
+            isiTabelProyekI();
+            isiTabelProyekII();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton21ActionPerformed
 
     private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
         // TODO add your handling code here:
+        jTextField9.setText(adminisme.getNama());
+        jTextField10.setText(adminisme.getNip());
         CardLayout cad = (CardLayout) kontenAd.getLayout();
         cad.show(kontenAd, "setelanAd");
     }//GEN-LAST:event_jButton22ActionPerformed
@@ -4024,6 +4778,8 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
         // TODO add your handling code here:
+        jTextField4.setText(mhs.getNama());
+        jTextField3.setText(mhs.getNim());
         CardLayout cad = (CardLayout) konten.getLayout();
         cad.show(konten, "setelanMhs");
     }//GEN-LAST:event_jButton25ActionPerformed
@@ -4097,14 +4853,14 @@ public class FormInduk extends javax.swing.JFrame {
                 pesan.setJam(jLabel45.getText());
                 pesan.setPenerima(tempPenerima);
                 try {
-                    if(dosenExist==true){
+                    if (dosenExist == true) {
                         prosespesan.deletePsnMhsMsuk(pesan, 0);
                         this.loadPesan("dosen", 0);
-           
-                    }else{
+
+                    } else {
                         prosespesan.deletePsnMhsMsuk(pesan, 1);
                     }
-                    
+
                     prosespesan.komit();
                 } catch (SQLException ex) {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
@@ -4118,11 +4874,11 @@ public class FormInduk extends javax.swing.JFrame {
                 pesan.setPenerima(tempPenerima);
                 pesan.setPengirim(onUsed);
                 try {
-                    if(dosenExist==true){
+                    if (dosenExist == true) {
                         prosespesan.deletePsnMhsKlr(pesan, 0);
                         this.loadPesan("dosen", 0);
-           
-                    }else{
+
+                    } else {
                         prosespesan.deletePsnMhsKlr(pesan, 1);
                     }
                     prosespesan.komit();
@@ -4130,7 +4886,7 @@ public class FormInduk extends javax.swing.JFrame {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-          
+
             bacaPsnMasukMhs.hide();
             try {
                 this.loadPesan("siswa", 1);
@@ -4142,13 +4898,30 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void statistikNilaiMhsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statistikNilaiMhsActionPerformed
         // TODO add your handling code here:
-        PieChart piechart = new PieChart(recordPekanMhs);
+        BarChart piechart = new BarChart(recordPekanMhs);
         piechart.pack();
         piechart.show();
     }//GEN-LAST:event_statistikNilaiMhsActionPerformed
 
     private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
         // TODO add your handling code here:
+        List<Kelas> lk = new ArrayList<>();
+        List<String> ls = new ArrayList<>();
+        KelasController kk = new KelasController();
+        int i = 0;
+        try {
+            lk = kk.getAll();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        jComboBox2.removeAllItems();
+        for (Kelas k : lk) {
+            ls.add((k.getKelas()));
+        }
+        for (String s : ls) {
+            jComboBox2.addItem(s);
+            System.out.println("" + s);
+        }
         CardLayout cad = (CardLayout) kontenAd.getLayout();
         cad.show(kontenAd, "daftarAd");
 
@@ -4164,8 +4937,12 @@ public class FormInduk extends javax.swing.JFrame {
                     m.setNim(idDaftarBaru.getText());
                     m.setNama(namaDaftarBaru.getText());
                     m.setPassword(passwordDfatarBaru.getText());
-                    m.setKelas(kelasDaftarBaru.getText());
-                    cm.insert(m);
+                    m.setKelas(jComboBox2.getSelectedItem().toString());
+                    m.setStatus(tingkatMhs.getSelectedItem().toString());
+                    m.setJenisKelamin(jenisKelamin.getSelectedItem().toString());
+                    if (m.getNim() != null && m.getPassword() != null) {
+                        cm.insert(m);
+                    }
                 } catch (SQLException ex) {
                     Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -4207,12 +4984,8 @@ public class FormInduk extends javax.swing.JFrame {
         idDaftarBaru.setText("");
         namaDaftarBaru.setText("");
         passwordDfatarBaru.setText("");
-        kelasDaftarBaru.setText("");
-    }//GEN-LAST:event_daftarOlehAdminActionPerformed
 
-    private void kelasDaftarBaruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kelasDaftarBaruActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_kelasDaftarBaruActionPerformed
+    }//GEN-LAST:event_daftarOlehAdminActionPerformed
 
     private void daftarUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daftarUserActionPerformed
         tabelSiswaAdmin.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -4256,6 +5029,7 @@ public class FormInduk extends javax.swing.JFrame {
             recordDosen = cd.getAll();
             isiTabeSiswa();
             isiTabelDosen();
+            isiTabeladmin();
             CardLayout cad = (CardLayout) kontenAd.getLayout();
             cad.show(kontenAd, "listAd");
         } catch (SQLException ex) {
@@ -4339,7 +5113,7 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.loadPesan("dosen", 0);
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -4393,6 +5167,12 @@ public class FormInduk extends javax.swing.JFrame {
                     cad.show(induk, "menu");
                 }
                 if (sinyalemen == 1) {
+                    kelolaBaru kb = new kelolaBaru();
+                    try {
+                        dosenisme = kb.getData(nip);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     cad.show(induk, "kaprodi");
                 }
                 if (sinyalemen == 2) {
@@ -4414,13 +5194,13 @@ public class FormInduk extends javax.swing.JFrame {
                                     isiTabelPekanMhs();
                                     namaMhsNilai.setText(m.getNama());
                                     nilaiMhs.setSize(769, 380);
-                                    double total=0, count=0;
-                                    for(pekanMhs p : recordPekanMhs){
-                                        total+=Integer.parseInt(p.getNilai());
+                                    double total = 0, count = 0;
+                                    for (pekanMhs p : recordPekanMhs) {
+                                        total += Integer.parseInt(p.getNilai());
                                         count++;
                                     }
-                                    total/=count;
-                                    nilaiTotal.setText("Nilai total = "+total);
+                                    total /= count;
+                                    nilaiTotal.setText("Nilai total = " + total);
                                     nilaiMhs.show();
                                 }
                             }
@@ -4429,12 +5209,22 @@ public class FormInduk extends javax.swing.JFrame {
                     } catch (SQLException ex) {
                         Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    dosenExist=true;
+                    try {
+                        dosenisme = cd.getData(nip);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    dosenExist = true;
                     isiTabelBimbingan();
                     cad.show(induk, "dosen");
-                    
+
                 }
                 if (sinyalemen == 3) {
+                    try {
+                        adminisme = ca.getData(nip);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     cad.show(induk, "admin");
                 }
                 onUsed = idMasuk.getText();
@@ -4545,6 +5335,121 @@ public class FormInduk extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ambilProjekActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        if (this.CekKonfirmasi(jPasswordField1.getText(), jPasswordField2.getText()) == true) {
+            try {
+                mhs.setPassword(jPasswordField1.getText());
+                cm.updatePassMhs(mhs);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton31ActionPerformed
+        // TODO add your handling code here:
+        if (this.CekKonfirmasi(jPasswordField3.getText(), jPasswordField4.getText()) == true) {
+            try {
+                dosenisme.setPassword(jPasswordField3.getText());
+                cd.updatePassDosen(dosenisme);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton31ActionPerformed
+
+    private void jButton33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton33ActionPerformed
+        // TODO add your handling code here:
+        if (this.CekKonfirmasi(jPasswordField6.getText(), jPasswordField5.getText()) == true) {
+            try {
+                dosenisme.setPassword(jPasswordField6.getText());
+                System.out.println("" + dosenisme.getPassword());
+                kb.updatePassKaprodi(dosenisme);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton33ActionPerformed
+
+    private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
+        // TODO add your handling code here:
+        if (this.CekKonfirmasi(jPasswordField7.getText(), jPasswordField8.getText()) == true) {
+            try {
+                adminisme.setPassword(jPasswordField7.getText());
+                ca.updatePassAdmin(adminisme);
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton34ActionPerformed
+
+    private void jButton35ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton35ActionPerformed
+        try {
+            // TODO add your handling code here:
+            Kelas k = new Kelas();
+            k.setKelas(namaKelas.getText());
+            KelasController kk = new KelasController();
+            kk.insert(k);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton35ActionPerformed
+
+    private void jButton36ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton36ActionPerformed
+        // TODO add your handling code here:
+        JFileChooser jfc = new JFileChooser();
+        int a = jfc.showOpenDialog(null);
+        if (a == 0) {
+            File file = jfc.getSelectedFile();
+            String dir = file.getAbsolutePath();
+            jTextField1.setText(dir);
+            if (jTextField1.getText() != null) {
+                jButton37.setEnabled(true);
+            }
+
+        }
+    }//GEN-LAST:event_jButton36ActionPerformed
+
+    private void jButton37ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton37ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton37ActionPerformed
+
+    private void inputNilaiMhsPkn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputNilaiMhsPkn1ActionPerformed
+        // TODO add your handling code here:
+        if (nilaiPekanMhs1.getText().length() > 0) {
+            try {
+                pekanKlmpk p = new pekanKlmpk();
+                p.setNip(nip);
+                if (Integer.parseInt(nilaiPekanMhs1.getText()) < 100 && Integer.parseInt(nilaiPekanMhs1.getText()) > 0) {
+                    p.setIdProyek(Integer.parseInt(proy.getIdPro()));
+                    p.setPekan(pekanMhs1.getSelectedItem().toString());
+                    p.setNilai(nilaiPekanMhs1.getText());
+
+                    try {
+
+                        cpk.insert(p);
+
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(mailContent, "Akses ditolak");
+                    }
+                    try {
+                        System.out.println("" + proy.getIdPro());
+                        recordPekanKlpk = cpk.getAll(nip, proy.getIdPro());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(mailContent, "Nilai diluar range");
+                }
+                isiTabelPekanKlpk();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(mailContent, "tolong angka");
+            }
+        }
+        nilaiPekanMhs1.setText("");
+    }//GEN-LAST:event_inputNilaiMhsPkn1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -4617,9 +5522,11 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTextField idMasuk;
     private javax.swing.JPanel induk;
     private javax.swing.JButton inputNilaiMhsPkn;
+    private javax.swing.JButton inputNilaiMhsPkn1;
     private javax.swing.JTextArea isiBukaPesan;
     private javax.swing.JLabel isiPesan;
     private javax.swing.JLabel isiPesan1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
@@ -4643,7 +5550,13 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JButton jButton29;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton30;
+    private javax.swing.JButton jButton31;
     private javax.swing.JButton jButton32;
+    private javax.swing.JButton jButton33;
+    private javax.swing.JButton jButton34;
+    private javax.swing.JButton jButton35;
+    private javax.swing.JButton jButton36;
+    private javax.swing.JButton jButton37;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -4651,6 +5564,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -4711,8 +5625,29 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel61;
     private javax.swing.JLabel jLabel62;
     private javax.swing.JLabel jLabel63;
+    private javax.swing.JLabel jLabel64;
+    private javax.swing.JLabel jLabel65;
+    private javax.swing.JLabel jLabel66;
+    private javax.swing.JLabel jLabel67;
+    private javax.swing.JLabel jLabel68;
+    private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel70;
+    private javax.swing.JLabel jLabel71;
+    private javax.swing.JLabel jLabel72;
+    private javax.swing.JLabel jLabel73;
+    private javax.swing.JLabel jLabel74;
+    private javax.swing.JLabel jLabel75;
+    private javax.swing.JLabel jLabel76;
+    private javax.swing.JLabel jLabel77;
+    private javax.swing.JLabel jLabel78;
+    private javax.swing.JLabel jLabel79;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel80;
+    private javax.swing.JLabel jLabel81;
+    private javax.swing.JLabel jLabel82;
+    private javax.swing.JLabel jLabel83;
+    private javax.swing.JLabel jLabel84;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelan;
     private javax.swing.JLabel jLabelan1;
@@ -4748,16 +5683,27 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel34;
+    private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
     private javax.swing.JPanel jPanel38;
     private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel40;
+    private javax.swing.JPanel jPanel41;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPasswordField jPasswordField2;
+    private javax.swing.JPasswordField jPasswordField3;
+    private javax.swing.JPasswordField jPasswordField4;
+    private javax.swing.JPasswordField jPasswordField5;
+    private javax.swing.JPasswordField jPasswordField6;
+    private javax.swing.JPasswordField jPasswordField7;
+    private javax.swing.JPasswordField jPasswordField8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
@@ -4777,7 +5723,12 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane24;
     private javax.swing.JScrollPane jScrollPane25;
     private javax.swing.JScrollPane jScrollPane26;
+    private javax.swing.JScrollPane jScrollPane27;
+    private javax.swing.JScrollPane jScrollPane28;
+    private javax.swing.JScrollPane jScrollPane29;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane30;
+    private javax.swing.JScrollPane jScrollPane31;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
@@ -4789,15 +5740,26 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JTabbedPane jTabbedPane5;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JTable jTable2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField10;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField7;
+    private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextField jTextField9;
+    private javax.swing.JComboBox jenisKelamin;
     private javax.swing.JComboBox jenisLogin;
     private javax.swing.JPanel kaprodi;
     private javax.swing.JLabel kelasBaru;
-    private javax.swing.JTextField kelasDaftarBaru;
     private javax.swing.JLabel kelasMhsAdmin;
     private javax.swing.JPanel kelompok;
+    private javax.swing.JFrame kelompokNilai;
     private javax.swing.JPanel konten;
     private javax.swing.JPanel kontenAd;
     private javax.swing.JPanel kontenDos;
@@ -4810,8 +5772,10 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTextField namaDaftarBaru;
     private javax.swing.JLabel namaDosenMhs;
     private javax.swing.JLabel namaDosenSurat;
+    private javax.swing.JTextField namaKelas;
     private javax.swing.JLabel namaKelompokMhs;
     private javax.swing.JLabel namaMhsNilai;
+    private javax.swing.JLabel namaMhsNilai1;
     private javax.swing.JPanel navDos;
     private javax.swing.JPanel navKap;
     private javax.swing.JPanel navKap1;
@@ -4819,12 +5783,17 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JFrame newMail;
     private javax.swing.JFrame newMail1;
     public javax.swing.JPanel nilai;
+    private javax.swing.JTable nilaiKelompok;
     private javax.swing.JFrame nilaiMhs;
     private javax.swing.JTextField nilaiPekanMhs;
+    private javax.swing.JTextField nilaiPekanMhs1;
     private javax.swing.JLabel nilaiTotal;
+    private javax.swing.JLabel nilaiTotal1;
     private javax.swing.JPasswordField passMasuk;
     private javax.swing.JTextField passwordDfatarBaru;
     private javax.swing.JComboBox pekanMhs;
+    private javax.swing.JComboBox pekanMhs1;
+    private javax.swing.JTable penilaianKelompok;
     private javax.swing.JLabel peringatanMasuk;
     private javax.swing.JPanel pesan;
     private javax.swing.JTextArea pesanAcc;
@@ -4846,6 +5815,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JFrame statusPro;
     private javax.swing.JTabbedPane tabMailMhs;
     private javax.swing.JTable tabPekanMhs;
+    private javax.swing.JTable tabPekanMhs1;
     private javax.swing.JTable tabelAdminAdmin;
     private javax.swing.JTable tabelDosenAdmin;
     private javax.swing.JTable tabelSiapSetuju;
@@ -4857,6 +5827,9 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel tgl2;
     private javax.swing.JLabel tgl3;
     private javax.swing.JLabel tgl4;
+    private javax.swing.JComboBox tingkatMhs;
+    private javax.swing.JTable tkt1admin;
+    private javax.swing.JTable tkt2admin;
     private javax.swing.JLabel totMailDsn;
     private javax.swing.JLabel totOutMailDsn;
     private javax.swing.JLabel totalInMail;

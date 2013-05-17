@@ -48,7 +48,29 @@ public class ControllerAdmin {
         
         return listAdm;
     }
-     
+     public Admin getData(String nip) throws SQLException {
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        Admin a = new Admin();
+        query = "select nip, nama from admin "
+                + "where nip ='"+nip+"'";
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {
+            
+            a.setNip(rs.getString("nip"));
+            a.setNama(rs.getString("nama"));
+            
+        }
+
+        return a;
+    }
+      public void updatePassAdmin(Admin a) throws SQLException{
+          PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "admin set password=? where nip=?");
+        
+        st.setString(1, a.getPassword());
+        st.setString(2, a.getNip());
+        st.executeUpdate();
+     }
      public void update(Admin a) throws SQLException {
         PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
                 + "admin set nama=? where nip=?");
