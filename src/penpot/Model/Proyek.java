@@ -11,7 +11,40 @@ package penpot.Model;
 public class Proyek extends Dosen{
     private String idPro, judul, nip, tahunAkademik, tingkat, 
             status,jumlah,ajukan,setuju,pesan, kelompok, deskripsi;
+    private int proposal,mingguan,presentasi,dokumentasi;
 
+    public int getProposal() {
+        return proposal;
+    }
+
+    public void setProposal(int proposal) {
+        this.proposal = proposal;
+    }
+
+    public int getMingguan() {
+        return mingguan;
+    }
+
+    public void setMingguan(int mingguan) {
+        this.mingguan = mingguan;
+    }
+
+    public int getPresentasi() {
+        return presentasi;
+    }
+
+    public void setPresentasi(int presentasi) {
+        this.presentasi = presentasi;
+    }
+
+    public int getDokumentasi() {
+        return dokumentasi;
+    }
+
+    public void setDokumentasi(int dokumentasi) {
+        this.dokumentasi = dokumentasi;
+    }
+    
     public String getDeskripsi() {
         return deskripsi;
     }

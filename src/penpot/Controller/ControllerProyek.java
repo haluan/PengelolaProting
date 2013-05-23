@@ -87,6 +87,58 @@ public class ControllerProyek {
         return listPro;
     }
     
+    public void insertNilaiProposal(Proyek p){
+        try {
+            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                      + "proyek set proposal=? where idproyek=?");
+
+              st.setInt(1, p.getProposal());
+              st.setString(2, p.getIdPro());
+              st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+     public void insertNilaiMingguan(Proyek p){
+        try {
+            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                      + "proyek set mingguan=? where idproyek=?");
+
+              st.setInt(1, p.getMingguan());
+              st.setString(2, p.getIdPro());
+              st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+     
+      public void insertNilaiPresentasi(Proyek p){
+        try {
+            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                      + "proyek set presentasi=? where idproyek=?");
+
+              st.setInt(1, p.getPresentasi());
+              st.setString(2, p.getIdPro());
+              st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+      
+       public void insertNilaiDokumentasi(Proyek p){
+        try {
+            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                      + "proyek set dokumentasi=? where idproyek=?");
+
+              st.setInt(1, p.getDokumentasi());
+              st.setString(2, p.getIdPro());
+              st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
      public List<Proyek> getAllPTI() throws SQLException {
         String query;
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
