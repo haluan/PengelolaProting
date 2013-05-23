@@ -22,7 +22,7 @@ public class ControllerPekanMhs {
 
     public pekanMhs insert(pekanMhs p) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().
-                prepareStatement("insert into pekanmhs (nip,nim,pekan,nilai)"
+                prepareStatement("insert into pekanmahasiswa (nip,nim,pekan,nilai)"
                 + " values(?,?,?,?)");
         st.setString(1, p.getNip());
         st.setString(2, p.getNim());
@@ -34,7 +34,7 @@ public class ControllerPekanMhs {
 
     public List<pekanMhs> getAll(String nip, String nim) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select pekan, nilai from pekanmhs where nip='" + nip + "' and nim='" + nim + "'"
+        String query = "select pekan, nilai from pekanmahasiswa where nip='" + nip + "' and nim='" + nim + "'"
                 + "order by pekan asc";
         ResultSet rs = st.executeQuery(query);
         List<pekanMhs> listNilai = new ArrayList<pekanMhs>();
@@ -51,7 +51,7 @@ public class ControllerPekanMhs {
 
     public List<pekanMhs> getAll(String nim) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select nama, pekan, nilai from pekanmhs join mahasiswa using (nim) where nim='" + nim + "'"
+        String query = "select nama, pekan, nilai from pekanmahasiswa join mahasiswa using (nim) where nim='" + nim + "'"
                 + "order by pekan asc";
         ResultSet rs = st.executeQuery(query);
         List<pekanMhs> listNilai = new ArrayList<pekanMhs>();

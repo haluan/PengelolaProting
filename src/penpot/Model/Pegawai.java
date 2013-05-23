@@ -19,7 +19,7 @@ public class Pegawai extends Orang{
 
     public void setNip(String nip) {
         try{
-        Integer.parseInt(nip);
+        Double.parseDouble(nip);
         this.nip = nip;
         }catch (Exception ex){
             JOptionPane.showMessageDialog(null, "Tolong Masukan Angka");
