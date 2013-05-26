@@ -66,12 +66,13 @@ public class ControllerDosen {
     }
     public List<Mahasiswa> getAllBinaan(String nip) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        query = "select judul, nim, m.nama, "
+        query = "select k.nama, judul, nim, m.nama, "
                 + "kelas,m.status,jabatan from mahasiswa m "
-                + "join proyek using (idproyek) "
+                + "join kelompok k using (idkelompok) join proyek using (idproyek) "
                 + "join dosen using (nip)"
                 + "where nip ='"+nip+"'"
                 + "order by judul asc";
+       
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
         while (rs.next()) {
@@ -82,6 +83,7 @@ public class ControllerDosen {
             m.setStatus(rs.getString("status"));
             m.setJabatan(rs.getString("jabatan"));
             m.setJudul(rs.getString("judul"));
+            m.setNamaKelompok(rs.getString(1));
             listMhs.add(m);
         }
 

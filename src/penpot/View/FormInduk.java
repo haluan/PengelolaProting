@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import penpot.Model.Pesan;
 import penpot.Model.Proyek;
 import penpot.Controller.ControllerAdmin;
 import penpot.Controller.ControllerDosen;
+import penpot.Controller.ControllerFile;
+import penpot.Controller.ControllerKelompok;
 import penpot.Controller.ControllerMahasiswa;
 import penpot.Controller.ControllerPekanKlmpk;
 import penpot.Controller.ControllerPekanMhs;
@@ -38,6 +41,7 @@ import penpot.Controller.KelasController;
 import penpot.Controller.kelolaBaru;
 import penpot.Controller.prosesMasuk;
 import penpot.Controller.prosesPesan;
+import penpot.Model.Dokumen;
 import penpot.Model.Kelas;
 import penpot.Model.pekanKlmpk;
 import penpot.Model.pekanMhs;
@@ -56,6 +60,7 @@ public class FormInduk extends javax.swing.JFrame {
     private Mahasiswa mhs = new Mahasiswa();
     private Dosen dosenisme = new Dosen();
     private Admin adminisme = new Admin();
+    private Kelompok kel = new Kelompok();
     Proyek proy = new Proyek();
     private static Proyek pro = new Proyek();
     //Record u/ tabel
@@ -67,12 +72,15 @@ public class FormInduk extends javax.swing.JFrame {
     private List<Mahasiswa> recordTemanKelompok = new ArrayList<>();
     private List<pekanMhs> recordPekanMhs = new ArrayList<>();
     private List<pekanKlmpk> recordPekanKlpk = new ArrayList<>();
-    private List<Proyek> recordProyekXX = new ArrayList<>();
+    private List<Kelompok> recordProyekKelompok = new ArrayList<>();
     private List<Proyek> recordProyekC = new ArrayList<>();
     private List<Proyek> recordProyeks = new ArrayList<>();
     private List<Proyek> recordProyekI = new ArrayList<>();
     private List<Proyek> recordProyekII = new ArrayList<>();
+    private List<Kelompok> recordKelompok = new ArrayList<>();
+    private List<Dokumen> recorDokumen = new ArrayList<>();
     //Instansiasi Controller
+    private ControllerKelompok ck = new ControllerKelompok();
     private ControllerMahasiswa cm = new ControllerMahasiswa();
     private ControllerDosen cd = new ControllerDosen();
     private ControllerAdmin ca = new ControllerAdmin();
@@ -82,6 +90,7 @@ public class FormInduk extends javax.swing.JFrame {
     private prosesMasuk posmas = new prosesMasuk();
     private ControllerPekanMhs cpm = new ControllerPekanMhs();
     private ControllerPekanKlmpk cpk = new ControllerPekanKlmpk();
+    private ControllerFile cf = new ControllerFile();
     //variabel tambahan
     private int row;
     private static int seen;
@@ -92,6 +101,7 @@ public class FormInduk extends javax.swing.JFrame {
     private Thread t1;
     private int sinyalemen;
     private int sinyalemenDaftar;
+    private String namafile;
     private boolean dosenExist = false;
 
     public FormInduk() {
@@ -115,6 +125,33 @@ public class FormInduk extends javax.swing.JFrame {
         jenisKelamin.setModel(new DefaultComboBoxModel(new String[]{"L", "P"}));
         tingkatMhs.setModel(new DefaultComboBoxModel(new String[]{"I", "II"}));
         t1.start();
+    }
+
+    void isiTabelUpload() throws SQLException {
+        recorDokumen = cf.getAll();
+        Object data[][] = new Object[recorDokumen.size()][1];
+        int x = 0;
+        for (Dokumen d : recorDokumen) {
+            data[x][0] = d.getUrl();
+            x++;
+        }
+        String judul[] = {"url"};
+        jTable2.setModel(new DefaultTableModel(data, judul));
+        jScrollPane29.setViewportView(jTable2);
+    }
+
+    void isiTabelPilihKelompok(String status) throws SQLException {
+        recordKelompok = ck.getAll(status);
+        Object data[][] = new Object[recordKelompok.size()][3];
+        int x = 0;
+        for (Kelompok k : recordKelompok) {
+            data[x][0] = k.getNamaKelompok();
+            data[x][1] = k.getJumlah();
+            x++;
+        }
+        String judul[] = {"Nama Kelompok", "Jumlah Anggota"};
+        tabPilihKelompok.setModel(new DefaultTableModel(data, judul));
+        jScrollPane32.setViewportView(tabPilihKelompok);
     }
 
     void isiTabelMasuk(String status) throws SQLException {
@@ -167,15 +204,15 @@ public class FormInduk extends javax.swing.JFrame {
     void isiTabelPenilaianKelompok(String nip) {
         try {
             int x = 0;
-            recordProyekXX = cp.getAllDOsen(nip);
-            Object data[][] = new Object[recordProyekXX.size()][3];
-            for (Proyek p : recordProyekXX) {
-                data[x][0] = p.getJudul();
-                data[x][1] = p.getTingkat();
-                data[x][2] = p.getTahunAkademik();
+            recordProyekKelompok = cp.getAllKelompok(nip);
+            Object data[][] = new Object[recordProyekKelompok.size()][3];
+            for (Kelompok k : recordProyekKelompok) {
+                data[x][0] = k.getNamaKelompok();
+                data[x][1] = k.getJudul();
+                data[x][2] = k.getTahunAkademik();
                 x++;
             }
-            String judul[] = {"Judul", "Tingkat", "Tahun Akademik"};
+            String judul[] = {"Nama", "Judul", "Tahun Akademik"};
             penilaianKelompok.setModel(new DefaultTableModel(data, judul));
             jScrollPane30.setViewportView(penilaianKelompok);
         } catch (SQLException ex) {
@@ -263,7 +300,7 @@ public class FormInduk extends javax.swing.JFrame {
             dataC[g][3] = p.getTahunAkademik();
             dataC[g][4] = p.getNama();
             dataC[g][5] = p.getStatus();
-            dataC[g][0] = p.getIdPro();
+            dataC[g][0] = p.getIdProyek();
             dataC[g][6] = p.getJumlah();
             g++;
 
@@ -282,7 +319,7 @@ public class FormInduk extends javax.swing.JFrame {
             dataI[y][3] = p.getTahunAkademik();
             dataI[y][4] = p.getNama();
             dataI[y][5] = p.getStatus();
-            dataI[y][0] = p.getIdPro();
+            dataI[y][0] = p.getIdProyek();
             dataI[y][6] = p.getJumlah();
             y++;
         }
@@ -303,7 +340,7 @@ public class FormInduk extends javax.swing.JFrame {
             dataII[z][3] = p.getTahunAkademik();
             dataII[z][4] = p.getNama();
             dataII[z][5] = p.getStatus();
-            dataII[z][0] = p.getIdPro();
+            dataII[z][0] = p.getIdProyek();
             dataII[z][6] = p.getJumlah();
             z++;
         }
@@ -329,7 +366,7 @@ public class FormInduk extends javax.swing.JFrame {
                 dataI[y][3] = p.getTahunAkademik();
                 dataI[y][4] = p.getNama();
                 dataI[y][5] = p.getStatus();
-                dataI[y][0] = p.getIdPro();
+                dataI[y][0] = p.getIdProyek();
                 dataI[y][6] = p.getJumlah();
                 y++;
             }
@@ -344,7 +381,7 @@ public class FormInduk extends javax.swing.JFrame {
                 dataII[z][3] = p.getTahunAkademik();
                 dataII[z][4] = p.getNama();
                 dataII[z][5] = p.getStatus();
-                dataII[z][0] = p.getIdPro();
+                dataII[z][0] = p.getIdProyek();
                 dataII[z][6] = p.getJumlah();
                 z++;
             }
@@ -362,7 +399,7 @@ public class FormInduk extends javax.swing.JFrame {
             data[x][3] = p.getTahunAkademik();
             data[x][4] = p.getNama();
             data[x][5] = p.getStatus();
-            data[x][0] = p.getIdPro();
+            data[x][0] = p.getIdProyek();
             data[x][6] = p.getJumlah();
 
             x++;
@@ -393,17 +430,18 @@ public class FormInduk extends javax.swing.JFrame {
 
     void isiTabelBimbingan() {
         int x = 0;
-        Object data[][] = new Object[recordTemanKelompok.size()][6];
+        Object data[][] = new Object[recordTemanKelompok.size()][7];
         for (Mahasiswa m : recordTemanKelompok) {
-            data[x][0] = m.getJudul();
+            data[x][0] = m.getNamaKelompok();
             data[x][1] = m.getNim();
             data[x][2] = m.getNama();
             data[x][3] = m.getKelas();
             data[x][4] = m.getStatus();
             data[x][5] = m.getJabatan();
+            data[x][6] = m.getJudul();
             x++;
         }
-        String judul[] = {"judul", "nim", "nama", "kelas", "status", "jabatan"};
+        String judul[] = {"kelompok", "nim", "nama", "kelas", "status", "jabatan", "judul"};
         bimbinganDosen.setModel(new DefaultTableModel(data, judul));
         jScrollPane13.setViewportView(bimbinganDosen);
     }
@@ -713,6 +751,8 @@ public class FormInduk extends javax.swing.JFrame {
         jTextArea2 = new javax.swing.JTextArea();
         ambilProjek = new javax.swing.JButton();
         kelompokNilai = new javax.swing.JFrame();
+        jPanel42 = new javax.swing.JPanel();
+        jTabbedPane7 = new javax.swing.JTabbedPane();
         jPanel41 = new javax.swing.JPanel();
         pekanMhs1 = new javax.swing.JComboBox();
         namaMhsNilai1 = new javax.swing.JLabel();
@@ -722,6 +762,23 @@ public class FormInduk extends javax.swing.JFrame {
         jScrollPane31 = new javax.swing.JScrollPane();
         tabPekanMhs1 = new javax.swing.JTable();
         nilaiTotal1 = new javax.swing.JLabel();
+        jPanel43 = new javax.swing.JPanel();
+        jLabel90 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jButton38 = new javax.swing.JButton();
+        jPanel44 = new javax.swing.JPanel();
+        jLabel97 = new javax.swing.JLabel();
+        jTextField13 = new javax.swing.JTextField();
+        jButton43 = new javax.swing.JButton();
+        jPanel45 = new javax.swing.JPanel();
+        jLabel98 = new javax.swing.JLabel();
+        jTextField14 = new javax.swing.JTextField();
+        jButton44 = new javax.swing.JButton();
+        ambilKelompok = new javax.swing.JFrame();
+        jPanel49 = new javax.swing.JPanel();
+        jLabel96 = new javax.swing.JLabel();
+        jButton41 = new javax.swing.JButton();
+        jButton42 = new javax.swing.JButton();
         induk = new javax.swing.JPanel();
         jPanel34 = new javax.swing.JPanel();
         jPanel36 = new javax.swing.JPanel();
@@ -760,8 +817,6 @@ public class FormInduk extends javax.swing.JFrame {
         projek = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jScrollPane18 = new javax.swing.JScrollPane();
-        pilihProjMhs = new javax.swing.JTable();
         kelompok = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane10 = new javax.swing.JScrollPane();
@@ -770,6 +825,10 @@ public class FormInduk extends javax.swing.JFrame {
         jLabelan = new javax.swing.JLabel();
         namaDosenMhs = new javax.swing.JLabel();
         namaKelompokMhs = new javax.swing.JLabel();
+        jTextField11 = new javax.swing.JTextField();
+        jLabel91 = new javax.swing.JLabel();
+        jLabel92 = new javax.swing.JLabel();
+        jButton39 = new javax.swing.JButton();
         upload = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane29 = new javax.swing.JScrollPane();
@@ -802,6 +861,24 @@ public class FormInduk extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
         jPasswordField2 = new javax.swing.JPasswordField();
+        rekapNilaiMhs = new javax.swing.JPanel();
+        jLabel85 = new javax.swing.JLabel();
+        jLabel86 = new javax.swing.JLabel();
+        jLabel87 = new javax.swing.JLabel();
+        jLabel88 = new javax.swing.JLabel();
+        jLabel89 = new javax.swing.JLabel();
+        jPanel46 = new javax.swing.JPanel();
+        jTabbedPane8 = new javax.swing.JTabbedPane();
+        jPanel47 = new javax.swing.JPanel();
+        jLabel93 = new javax.swing.JLabel();
+        jTextField12 = new javax.swing.JTextField();
+        jButton40 = new javax.swing.JButton();
+        jScrollPane18 = new javax.swing.JScrollPane();
+        pilihProjMhs = new javax.swing.JTable();
+        jLabel94 = new javax.swing.JLabel();
+        jPanel48 = new javax.swing.JPanel();
+        jScrollPane32 = new javax.swing.JScrollPane();
+        tabPilihKelompok = new javax.swing.JTable();
         dosen = new javax.swing.JPanel();
         navDos = new javax.swing.JPanel();
         jButton12 = new javax.swing.JButton();
@@ -861,6 +938,8 @@ public class FormInduk extends javax.swing.JFrame {
         jScrollPane22 = new javax.swing.JScrollPane();
         deskripsiProyekDos = new javax.swing.JTextArea();
         jLabel57 = new javax.swing.JLabel();
+        jLabel95 = new javax.swing.JLabel();
+        maksPerKelompok = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
         jScrollPane13 = new javax.swing.JScrollPane();
@@ -1810,7 +1889,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel41Layout.createSequentialGroup()
                         .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane31, javax.swing.GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE)
+                            .addComponent(jScrollPane31, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addGroup(jPanel41Layout.createSequentialGroup()
                                 .addGroup(jPanel41Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel41Layout.createSequentialGroup()
@@ -1825,7 +1904,7 @@ public class FormInduk extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(jPanel41Layout.createSequentialGroup()
                         .addComponent(inputNilaiMhsPkn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 451, Short.MAX_VALUE)
                         .addComponent(nilaiTotal1)
                         .addGap(157, 157, 157))))
         );
@@ -1846,7 +1925,137 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(nilaiTotal1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane31, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(106, Short.MAX_VALUE))
+        );
+
+        jTabbedPane7.addTab("MINGGUAN", jPanel41);
+
+        jLabel90.setText("Nilai");
+
+        jButton38.setText("input");
+        jButton38.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton38ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel43Layout = new javax.swing.GroupLayout(jPanel43);
+        jPanel43.setLayout(jPanel43Layout);
+        jPanel43Layout.setHorizontalGroup(
+            jPanel43Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel43Layout.createSequentialGroup()
+                .addGap(163, 163, 163)
+                .addComponent(jLabel90)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel43Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton38, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(397, Short.MAX_VALUE))
+        );
+        jPanel43Layout.setVerticalGroup(
+            jPanel43Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel43Layout.createSequentialGroup()
+                .addGap(129, 129, 129)
+                .addGroup(jPanel43Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel90)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54)
+                .addComponent(jButton38)
+                .addContainerGap(153, Short.MAX_VALUE))
+        );
+
+        jTabbedPane7.addTab("PROPOSAL", jPanel43);
+
+        jLabel97.setText("Nilai");
+
+        jButton43.setText("input");
+        jButton43.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton43ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel44Layout = new javax.swing.GroupLayout(jPanel44);
+        jPanel44.setLayout(jPanel44Layout);
+        jPanel44Layout.setHorizontalGroup(
+            jPanel44Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel44Layout.createSequentialGroup()
+                .addGap(163, 163, 163)
+                .addComponent(jLabel97)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel44Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton43, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(397, Short.MAX_VALUE))
+        );
+        jPanel44Layout.setVerticalGroup(
+            jPanel44Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel44Layout.createSequentialGroup()
+                .addGap(129, 129, 129)
+                .addGroup(jPanel44Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel97)
+                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54)
+                .addComponent(jButton43)
+                .addContainerGap(153, Short.MAX_VALUE))
+        );
+
+        jTabbedPane7.addTab("DOKUMENTASI", jPanel44);
+
+        jLabel98.setText("Nilai");
+
+        jButton44.setText("input");
+        jButton44.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton44ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel45Layout = new javax.swing.GroupLayout(jPanel45);
+        jPanel45.setLayout(jPanel45Layout);
+        jPanel45Layout.setHorizontalGroup(
+            jPanel45Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel45Layout.createSequentialGroup()
+                .addGap(163, 163, 163)
+                .addComponent(jLabel98)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel45Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton44, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(397, Short.MAX_VALUE))
+        );
+        jPanel45Layout.setVerticalGroup(
+            jPanel45Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel45Layout.createSequentialGroup()
+                .addGap(129, 129, 129)
+                .addGroup(jPanel45Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel98)
+                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54)
+                .addComponent(jButton44)
+                .addContainerGap(153, Short.MAX_VALUE))
+        );
+
+        jTabbedPane7.addTab("PRESENTASI", jPanel45);
+
+        javax.swing.GroupLayout jPanel42Layout = new javax.swing.GroupLayout(jPanel42);
+        jPanel42.setLayout(jPanel42Layout);
+        jPanel42Layout.setHorizontalGroup(
+            jPanel42Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 756, Short.MAX_VALUE)
+            .addGroup(jPanel42Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel42Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jTabbedPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanel42Layout.setVerticalGroup(
+            jPanel42Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 407, Short.MAX_VALUE)
+            .addGroup(jPanel42Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel42Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout kelompokNilaiLayout = new javax.swing.GroupLayout(kelompokNilai.getContentPane());
@@ -1856,17 +2065,76 @@ public class FormInduk extends javax.swing.JFrame {
             .addGap(0, 774, Short.MAX_VALUE)
             .addGroup(kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(kelompokNilaiLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                    .addGap(0, 9, Short.MAX_VALUE)
+                    .addComponent(jPanel42, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 9, Short.MAX_VALUE)))
         );
         kelompokNilaiLayout.setVerticalGroup(
             kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 329, Short.MAX_VALUE)
+            .addGap(0, 440, Short.MAX_VALUE)
             .addGroup(kelompokNilaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(kelompokNilaiLayout.createSequentialGroup()
+                    .addGap(0, 17, Short.MAX_VALUE)
+                    .addComponent(jPanel42, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 16, Short.MAX_VALUE)))
+        );
+
+        jLabel96.setText("Anda Yakin ambil kelompok ini?");
+
+        jButton41.setText("ya");
+        jButton41.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton41ActionPerformed(evt);
+            }
+        });
+
+        jButton42.setText("tidak");
+
+        javax.swing.GroupLayout jPanel49Layout = new javax.swing.GroupLayout(jPanel49);
+        jPanel49.setLayout(jPanel49Layout);
+        jPanel49Layout.setHorizontalGroup(
+            jPanel49Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel49Layout.createSequentialGroup()
+                .addContainerGap(121, Short.MAX_VALUE)
+                .addComponent(jLabel96)
+                .addGap(114, 114, 114))
+            .addGroup(jPanel49Layout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addComponent(jButton41, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton42, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(63, 63, 63))
+        );
+        jPanel49Layout.setVerticalGroup(
+            jPanel49Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel49Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(jLabel96)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addGroup(jPanel49Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton41)
+                    .addComponent(jButton42))
+                .addGap(25, 25, 25))
+        );
+
+        javax.swing.GroupLayout ambilKelompokLayout = new javax.swing.GroupLayout(ambilKelompok.getContentPane());
+        ambilKelompok.getContentPane().setLayout(ambilKelompokLayout);
+        ambilKelompokLayout.setHorizontalGroup(
+            ambilKelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(ambilKelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(ambilKelompokLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel49, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        ambilKelompokLayout.setVerticalGroup(
+            ambilKelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 145, Short.MAX_VALUE)
+            .addGroup(ambilKelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(ambilKelompokLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel49, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -1983,7 +2251,7 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel38Layout.setVerticalGroup(
             jPanel38Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel38Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(14, Short.MAX_VALUE)
                 .addComponent(peringatanMasuk)
                 .addGap(18, 18, 18)
                 .addComponent(jenisLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2266,7 +2534,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(statistikNilaiMhs)
                 .addGap(113, 113, 113)
                 .addComponent(jScrollPane15, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(345, Short.MAX_VALUE))
+                .addContainerGap(348, Short.MAX_VALUE))
         );
 
         konten.add(nilai, "nilai");
@@ -2276,24 +2544,10 @@ public class FormInduk extends javax.swing.JFrame {
 
         jLabel16.setText("* jumlah yang tertera merupakan jumlah yang masih tersedia untuk dimasuki sebagai anggota kelompok");
 
-        pilihProjMhs.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane18.setViewportView(pilihProjMhs);
-
         javax.swing.GroupLayout projekLayout = new javax.swing.GroupLayout(projek);
         projek.setLayout(projekLayout);
         projekLayout.setHorizontalGroup(
             projekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane18, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(projekLayout.createSequentialGroup()
                 .addGroup(projekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(projekLayout.createSequentialGroup()
@@ -2309,11 +2563,9 @@ public class FormInduk extends javax.swing.JFrame {
             .addGroup(projekLayout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jLabel10)
-                .addGap(120, 120, 120)
-                .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(73, 73, 73)
+                .addGap(526, 526, 526)
                 .addComponent(jLabel16)
-                .addGap(0, 69, Short.MAX_VALUE))
+                .addGap(0, 72, Short.MAX_VALUE))
         );
 
         konten.add(projek, "projek");
@@ -2346,6 +2598,18 @@ public class FormInduk extends javax.swing.JFrame {
         namaKelompokMhs.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
         namaKelompokMhs.setText("jLabel8");
 
+        jLabel91.setText("Nama");
+
+        jLabel92.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel92.setText("EDIT KELOMPOK");
+
+        jButton39.setText("submit");
+        jButton39.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton39ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout kelompokLayout = new javax.swing.GroupLayout(kelompok);
         kelompok.setLayout(kelompokLayout);
         kelompokLayout.setHorizontalGroup(
@@ -2355,17 +2619,28 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jLabel11)
                 .addGap(469, 469, 469))
             .addGroup(kelompokLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(kelompokLayout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelan1)
-                            .addComponent(jLabelan))
-                        .addGap(18, 18, 18)
+                            .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(kelompokLayout.createSequentialGroup()
+                                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelan1)
+                                    .addComponent(jLabelan))
+                                .addGap(18, 18, 18)
+                                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(namaKelompokMhs)
+                                    .addComponent(namaDosenMhs)))))
+                    .addGroup(kelompokLayout.createSequentialGroup()
+                        .addGap(369, 369, 369)
                         .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(namaKelompokMhs)
-                            .addComponent(namaDosenMhs))))
+                            .addComponent(jLabel92)
+                            .addGroup(kelompokLayout.createSequentialGroup()
+                                .addComponent(jLabel91)
+                                .addGap(18, 18, 18)
+                                .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton39))))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
         kelompokLayout.setVerticalGroup(
@@ -2382,7 +2657,15 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(namaKelompokMhs))
                 .addGap(77, 77, 77)
                 .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 372, Short.MAX_VALUE))
+                .addGap(63, 63, 63)
+                .addComponent(jLabel92)
+                .addGap(41, 41, 41)
+                .addGroup(kelompokLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel91))
+                .addGap(33, 33, 33)
+                .addComponent(jButton39)
+                .addGap(0, 178, Short.MAX_VALUE))
         );
 
         konten.add(kelompok, "kelompok");
@@ -2409,6 +2692,12 @@ public class FormInduk extends javax.swing.JFrame {
         jButton36.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton36ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
             }
         });
 
@@ -2460,7 +2749,7 @@ public class FormInduk extends javax.swing.JFrame {
                             .addComponent(jButton36))
                         .addGap(36, 36, 36)
                         .addComponent(jButton37)))
-                .addContainerGap(184, Short.MAX_VALUE))
+                .addContainerGap(187, Short.MAX_VALUE))
         );
 
         konten.add(upload, "upload");
@@ -2605,7 +2894,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(refreshPesanMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(tabMailMhs, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(80, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         konten.add(pesan, "pesan");
@@ -2685,10 +2974,170 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(373, Short.MAX_VALUE))
+                .addContainerGap(376, Short.MAX_VALUE))
         );
 
         konten.add(setelanMhs, "setelanMhs");
+
+        jLabel85.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel85.setText("REKAP NILAI");
+
+        jLabel86.setText("jLabel86");
+
+        jLabel87.setText("jLabel87");
+
+        jLabel88.setText("jLabel88");
+
+        jLabel89.setText("jLabel89");
+
+        javax.swing.GroupLayout rekapNilaiMhsLayout = new javax.swing.GroupLayout(rekapNilaiMhs);
+        rekapNilaiMhs.setLayout(rekapNilaiMhsLayout);
+        rekapNilaiMhsLayout.setHorizontalGroup(
+            rekapNilaiMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rekapNilaiMhsLayout.createSequentialGroup()
+                .addContainerGap(512, Short.MAX_VALUE)
+                .addComponent(jLabel85)
+                .addGap(421, 421, 421))
+            .addGroup(rekapNilaiMhsLayout.createSequentialGroup()
+                .addGap(352, 352, 352)
+                .addGroup(rekapNilaiMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel89)
+                    .addComponent(jLabel88)
+                    .addComponent(jLabel87)
+                    .addComponent(jLabel86))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        rekapNilaiMhsLayout.setVerticalGroup(
+            rekapNilaiMhsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rekapNilaiMhsLayout.createSequentialGroup()
+                .addGap(76, 76, 76)
+                .addComponent(jLabel85)
+                .addGap(57, 57, 57)
+                .addComponent(jLabel86)
+                .addGap(45, 45, 45)
+                .addComponent(jLabel87)
+                .addGap(48, 48, 48)
+                .addComponent(jLabel88)
+                .addGap(58, 58, 58)
+                .addComponent(jLabel89)
+                .addContainerGap(316, Short.MAX_VALUE))
+        );
+
+        konten.add(rekapNilaiMhs, "card8");
+
+        jLabel93.setText("nama kelompok");
+
+        jButton40.setText("submit");
+        jButton40.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton40ActionPerformed(evt);
+            }
+        });
+
+        pilihProjMhs.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane18.setViewportView(pilihProjMhs);
+
+        jLabel94.setText("judul yang dipilih ");
+
+        javax.swing.GroupLayout jPanel47Layout = new javax.swing.GroupLayout(jPanel47);
+        jPanel47.setLayout(jPanel47Layout);
+        jPanel47Layout.setHorizontalGroup(
+            jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel47Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel47Layout.createSequentialGroup()
+                        .addGroup(jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton40, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel93))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel94))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, 694, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(106, 106, 106))
+        );
+        jPanel47Layout.setVerticalGroup(
+            jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel47Layout.createSequentialGroup()
+                .addGroup(jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel47Layout.createSequentialGroup()
+                        .addGap(121, 121, 121)
+                        .addGroup(jPanel47Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel93)
+                            .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel94)
+                        .addGap(55, 55, 55)
+                        .addComponent(jButton40))
+                    .addGroup(jPanel47Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(jScrollPane18, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(273, Short.MAX_VALUE))
+        );
+
+        jTabbedPane8.addTab("buat kelompok", jPanel47);
+
+        tabPilihKelompok.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane32.setViewportView(tabPilihKelompok);
+
+        javax.swing.GroupLayout jPanel48Layout = new javax.swing.GroupLayout(jPanel48);
+        jPanel48.setLayout(jPanel48Layout);
+        jPanel48Layout.setHorizontalGroup(
+            jPanel48Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel48Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane32, javax.swing.GroupLayout.DEFAULT_SIZE, 1049, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel48Layout.setVerticalGroup(
+            jPanel48Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel48Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane32, javax.swing.GroupLayout.DEFAULT_SIZE, 613, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane8.addTab("pilih kelompok", jPanel48);
+
+        javax.swing.GroupLayout jPanel46Layout = new javax.swing.GroupLayout(jPanel46);
+        jPanel46.setLayout(jPanel46Layout);
+        jPanel46Layout.setHorizontalGroup(
+            jPanel46Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel46Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane8)
+                .addContainerGap())
+        );
+        jPanel46Layout.setVerticalGroup(
+            jPanel46Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel46Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane8)
+                .addContainerGap())
+        );
+
+        konten.add(jPanel46, "pilihkelompok");
 
         javax.swing.GroupLayout menuLayout = new javax.swing.GroupLayout(menu);
         menu.setLayout(menuLayout);
@@ -2706,7 +3155,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(navigasi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(konten, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2993,7 +3442,7 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(582, Short.MAX_VALUE)
+                .addContainerGap(551, Short.MAX_VALUE)
                 .addComponent(jLabel24)
                 .addGap(458, 458, 458))
             .addGroup(jPanel5Layout.createSequentialGroup()
@@ -3138,7 +3587,7 @@ public class FormInduk extends javax.swing.JFrame {
         jLabel8.setText("tingkat");
 
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel14.setText("jumlah");
+        jLabel14.setText("jumlahkelompok");
 
         ajukanTingkat.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ajukanTingkat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -3178,6 +3627,8 @@ public class FormInduk extends javax.swing.JFrame {
 
         jLabel57.setText("deskripsi : ");
 
+        jLabel95.setText("anggota per kelompok");
+
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
@@ -3187,26 +3638,29 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jScrollPane21, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ajukanProyek)
+                    .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
                     .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel14)
-                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel8)
-                                .addComponent(jLabel5)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ajukanTingkat, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(batalAjukanProyek)
-                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(ajukanJudul, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(ajukanJumlahKlpk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel57)
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(ajukanProyek)
+                            .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addComponent(jLabel95)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(maksPerKelompok))
+                            .addComponent(jLabel57)
+                            .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addGap(230, 230, 230)
+                                .addComponent(batalAjukanProyek))
+                            .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel5))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(ajukanTingkat, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ajukanJumlahKlpk, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ajukanJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -3214,7 +3668,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -3230,15 +3684,17 @@ public class FormInduk extends javax.swing.JFrame {
                             .addComponent(ajukanJumlahKlpk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel95)
+                            .addComponent(maksPerKelompok, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel57)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane22, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ajukanProyek)
                             .addComponent(batalAjukanProyek))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel57)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane22, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("mengajukan", jPanel13);
@@ -3328,7 +3784,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(navDos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(dosenLayout.createSequentialGroup()
                         .addComponent(kontenDos, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 48, Short.MAX_VALUE)))
+                        .addGap(0, 51, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -3610,7 +4066,7 @@ public class FormInduk extends javax.swing.JFrame {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(517, Short.MAX_VALUE)
+                .addContainerGap(486, Short.MAX_VALUE)
                 .addComponent(jLabel27)
                 .addGap(467, 467, 467))
             .addGroup(jPanel8Layout.createSequentialGroup()
@@ -3632,7 +4088,7 @@ public class FormInduk extends javax.swing.JFrame {
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPasswordField5, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(413, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3680,7 +4136,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(navKap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(kaprodiLayout.createSequentialGroup()
                         .addComponent(kontenKap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 50, Short.MAX_VALUE)))
+                        .addGap(0, 53, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -3805,7 +4261,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jButton22, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(daftarUser, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 182, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
                 .addComponent(jButton23, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -3829,7 +4285,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addComponent(jLabel29)
-                .addGap(0, 654, Short.MAX_VALUE))
+                .addGap(0, 657, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel10, "dokumenAd");
@@ -3910,7 +4366,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(jPasswordField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48)
                 .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(405, Short.MAX_VALUE))
+                .addContainerGap(408, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel11, "setelanAd");
@@ -4005,7 +4461,7 @@ public class FormInduk extends javax.swing.JFrame {
                 .addComponent(jLabel28)
                 .addGap(62, 62, 62)
                 .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(291, Short.MAX_VALUE))
+                .addContainerGap(294, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel9, "proyekAd");
@@ -4160,7 +4616,7 @@ public class FormInduk extends javax.swing.JFrame {
                     .addComponent(jLabel80))
                 .addGap(31, 31, 31)
                 .addComponent(daftarOlehAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addContainerGap(210, Short.MAX_VALUE))
         );
 
         kontenAd.add(jPanel24, "daftarAd");
@@ -4196,7 +4652,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel26Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -4229,7 +4685,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel27Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -4262,7 +4718,7 @@ public class FormInduk extends javax.swing.JFrame {
             jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel28Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -4353,25 +4809,69 @@ public class FormInduk extends javax.swing.JFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
 
         CardLayout cad = (CardLayout) konten.getLayout();
-        cad.show(konten, "projek");
 
-        if (mhs.getIdProyek() == 0) {
-            if (mhs.getStatus().equals("II")) {
-                try {
-                    recordProyekII = cp.getAllPTII();
-                    isiTabelPilihProjMhs("II");
-                } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (mhs.getStatus().equals("I")) {
-                try {
-                    recordProyekI = cp.getAllPTI();
-                    isiTabelPilihProjMhs("I");
-                } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
-                }
+
+        cad.show(konten, "card8");
+
+        ControllerKelompok ck = new ControllerKelompok();
+        Kelompok p = ck.getNilaiPT(nim);
+        jLabel86.setText("Nilai Proposal    : " + p.getProposal());
+        jLabel87.setText("Nilai Mingguan    : " + p.getMingguan());
+        jLabel88.setText("Nilai Presentasi  : " + p.getPresentasi());
+        jLabel89.setText("Nilai Dokumentasi : " + p.getDokumentasi());
+
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+
+
+
+        try {
+            recordKelompok = ck.getAll(mhs.getStatus());
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (Kelompok kel : recordKelompok) {
+
+            if (kel.getDiajukan().equals(nim)) {
+                System.out.println("" + kel.getDiajukan() + "  " + nim);
+                jButton40.setVisible(false);
+                jLabel94.setText("ANDA SUDAH MENDAFTARKAN KELOMPOK");
+                break;
             }
         }
+
+        if (mhs.getStatus().equals("II")) {
+            try {
+                recordProyekII = cp.getAllPTII();
+                isiTabelPilihKelompok("II");
+                isiTabelPilihProjMhs("II");
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (mhs.getStatus().equals("I")) {
+            try {
+                isiTabelPilihKelompok("I");
+                recordProyekI = cp.getAllPTI();
+                isiTabelPilihProjMhs("I");
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        tabPilihKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = tabPilihKelompok.getSelectedRow();
+                if (row != -1) {
+                    kel = recordKelompok.get(row);
+                    System.out.println("" + kel.getIdKelompok());
+                    ambilKelompok.setSize(300, 300);
+                    ambilKelompok.show();
+                    JOptionPane.showMessageDialog(mailContent, pesaN);
+                }
+            }
+        });
+
         pilihProjMhs.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 row = pilihProjMhs.getSelectedRow();
@@ -4386,17 +4886,17 @@ public class FormInduk extends javax.swing.JFrame {
                     jLabel62.setText("Max. Anggota  : " + pro.getJumlah());
                     jTextArea2.setText(pro.getDeskripsi());
                     pilihPro.setSize(500, 500);
-                    if (pro.getJumlah().equals("0")) {
+                    if (Integer.parseInt(pro.getJumlah()) <= 0) {
                         JOptionPane.showMessageDialog(mailContent, "Kuota Habis");
                     } else {
                         pilihPro.show();
+
                     }
                 }
             }
         });
-    }//GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+
         tabelTemanKelompok.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 row = tabelTemanKelompok.getSelectedRow();
@@ -4404,30 +4904,46 @@ public class FormInduk extends javax.swing.JFrame {
                 }
             }
         });
-        Proyek p = new Proyek();
+        Kelompok p = new Kelompok();
         try {
             p = cm.getDataKelompok(nim);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         Dosen d = new Dosen();
         try {
             d = cm.getDataDepe(nim);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
-        idProyek = p.getIdPro();
-        namaKelompokMhs.setText(p.getKelompok());
+
+        namaKelompokMhs.setText(p.getNamaKelompok());
         namaDosenMhs.setText(d.getNama());
         CardLayout cad = (CardLayout) konten.getLayout();
-        cad.show(konten, "kelompok");
-        try {
-            // TODO add your handling code here:
-            recordTemanKelompok = cm.getKelompok(idProyek);
-        } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        if (mhs.getIdKelompok() != 0) {
+
+            cad.show(konten, "kelompok");
+            try {
+                // TODO add your handling code here:
+                recordTemanKelompok = cm.getKelompok(mhs.getIdKelompok());
+
+
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+            isiTabelTemanKelompok();
+        } else {
+            cad.show(konten, "pilihkelompok");
+
+
         }
-        isiTabelTemanKelompok();
 
     }//GEN-LAST:event_jButton8ActionPerformed
 
@@ -4435,6 +4951,29 @@ public class FormInduk extends javax.swing.JFrame {
         // TODO add your handling code here:
         CardLayout cad = (CardLayout) konten.getLayout();
         cad.show(konten, "upload");
+        try {
+            isiTabelUpload();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        jTable2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                row = jTable2.getSelectedRow();
+                if (row != -1) {
+                    Dokumen dok = recorDokumen.get(row);                
+                    try {
+                        Process p = Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler C:\\Users\\haluan\\Documents\\NetBeansProjects\\PengelolaProting\\file\\" + dok.getUrl());
+                         p.waitFor();
+                    } catch (IOException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                       
+                    
+                }
+            }
+        });
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
@@ -4482,8 +5021,11 @@ public class FormInduk extends javax.swing.JFrame {
             isiTabelKeluar("siswa");
             CardLayout cad = (CardLayout) konten.getLayout();
             cad.show(konten, "pesan");
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_jButton10ActionPerformed
@@ -4509,11 +5051,10 @@ public class FormInduk extends javax.swing.JFrame {
             isiTabelKeluar("siswa");
             jTextField4.setText("");
             jTextField3.setText("");
-           
+
         } catch (SQLException ex) {
-            
         } finally {
-             kosongAwal();
+            kosongAwal();
             this.keluar();
         }
     }//GEN-LAST:event_jButton11ActionPerformed
@@ -4527,16 +5068,20 @@ public class FormInduk extends javax.swing.JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 int row = penilaianKelompok.getSelectedRow();
                 if (row != -1) {
-                    proy = recordProyekXX.get(row);
+                    kel = recordProyekKelompok.get(row);
                     kelompokNilai.setSize(500, 500);
                     namaMhsNilai1.setText(proy.getJudul());
                     try {
-                        recordPekanKlpk = cpk.getAll(nip, proy.getIdPro());
+                        recordPekanKlpk = cpk.getAll(nip, "" + kel.getIdKelompok());
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     isiTabelPekanKlpk();
-                    System.out.println("" + proy.getIdPro() + "    " + nip);
+                    System.out.println("" + proy.getIdProyek() + "    " + nip);
+                    kelompokNilai.setSize(600, 500);
                     kelompokNilai.show();
                 }
             }
@@ -4545,8 +5090,8 @@ public class FormInduk extends javax.swing.JFrame {
         lihatProyekAjuan.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 row = lihatProyekAjuan.getSelectedRow();
-                pro = recordProyeks.get(row);
                 if (row != -1) {
+                    pro = recordProyeks.get(row);
                     statusPro.setSize(600, 600);
                     jLabel50.setText("Judul : " + pro.getJudul());
                     jLabel51.setText("Tingkat : " + pro.getTingkat());
@@ -4563,8 +5108,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             recordProyeks = cp.getAllDOsen(nip);
             isiTabelProyekDos();
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         ajukanTingkat.removeAllItems();
         ajukanTingkat.setModel(new DefaultComboBoxModel(new String[]{"I", "II"}));
@@ -4579,8 +5127,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             recordTemanKelompok = cd.getAllBinaan(nip);
 
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         isiTabelBimbingan();
         CardLayout cad = (CardLayout) kontenDos.getLayout();
@@ -4594,8 +5145,11 @@ public class FormInduk extends javax.swing.JFrame {
         int i = 0;
         try {
             lm = cd.getAllBinaan(nip);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         daftarBinaanDosen.removeAllItems();
         for (Mahasiswa mhs : lm) {
@@ -4647,8 +5201,11 @@ public class FormInduk extends javax.swing.JFrame {
             this.loadPesan("dosen", 0);
             CardLayout cad = (CardLayout) konten.getLayout();
             cad.show(konten, "pesan");
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         CardLayout cad = (CardLayout) kontenDos.getLayout();
         cad.show(kontenDos, "pesan");
@@ -4662,23 +5219,22 @@ public class FormInduk extends javax.swing.JFrame {
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
         // TODO add your handling code here:
-       try{
-        jTextField5.setText("");
-        jTextField6.setText("");
-        jTextField5.setText("");
-        jTextField6.setText("");
-        jPasswordField3.setText("");
-        jPasswordField4.setText("");
-        recordProyeks = null;
-        recordTemanKelompok = null;
-         recordPekanKlpk = null;
-       }catch (Exception ex){
-           
-       }finally{
-        this.dosenExist = false;
-        kosongAwal();
-        this.keluar();
-       }
+        try {
+            jTextField5.setText("");
+            jTextField6.setText("");
+            jTextField5.setText("");
+            jTextField6.setText("");
+            jPasswordField3.setText("");
+            jPasswordField4.setText("");
+            recordProyeks = null;
+            recordTemanKelompok = null;
+            recordPekanKlpk = null;
+        } catch (Exception ex) {
+        } finally {
+            this.dosenExist = false;
+            kosongAwal();
+            this.keluar();
+        }
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
@@ -4700,8 +5256,11 @@ public class FormInduk extends javax.swing.JFrame {
             recordProyekC = cp.getAll();
             recordProyekI = cp.getAllPTI();
             recordProyekII = cp.getAllPTII();
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         isiTabelProyek();
         isiTabelProyekI();
@@ -4712,8 +5271,11 @@ public class FormInduk extends javax.swing.JFrame {
                 if (row != -1) {
                     try {
                         recordProyekC = cp.getAll();
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     pro = recordProyekC.get(row);
                     jLabel17.setText("Judul : " + pro.getJudul());
@@ -4751,8 +5313,11 @@ public class FormInduk extends javax.swing.JFrame {
             recordProyekII = cp.getAllPTII();
             isiTabelProyekI();
             isiTabelProyekII();
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton21ActionPerformed
 
@@ -4799,8 +5364,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.loadPesan("siswa", 1);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_refreshPesanMhsActionPerformed
 
@@ -4815,8 +5383,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             d = cm.getDataDepe(nim);
             this.loadPesan("siswa", 1);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         if (mailContent.getText().length() != 0) {
@@ -4832,8 +5403,11 @@ public class FormInduk extends javax.swing.JFrame {
                 this.loadPesan("siswa", 1);
                 newMail.hide();
                 newMail.dispose();
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             JOptionPane.showMessageDialog(mailContent, "isi pesan tidak boleh kosong");
@@ -4873,8 +5447,11 @@ public class FormInduk extends javax.swing.JFrame {
                     }
 
                     prosespesan.komit();
+
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (sinyalHapus == 1) {
                 Pesan pesan = new Pesan();
@@ -4893,16 +5470,22 @@ public class FormInduk extends javax.swing.JFrame {
                         prosespesan.deletePsnMhsKlr(pesan, 1);
                     }
                     prosespesan.komit();
+
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
             bacaPsnMasukMhs.hide();
             try {
                 this.loadPesan("siswa", 1);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton26ActionPerformed
@@ -4922,8 +5505,11 @@ public class FormInduk extends javax.swing.JFrame {
         int i = 0;
         try {
             lk = kk.getAll();
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         jComboBox2.removeAllItems();
         for (Kelas k : lk) {
@@ -4953,9 +5539,12 @@ public class FormInduk extends javax.swing.JFrame {
                     m.setJenisKelamin(jenisKelamin.getSelectedItem().toString());
                     if (m.getNim() != null && m.getPassword() != null) {
                         cm.insert(m);
+
+
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (sinyalemenDaftar == 1) {
@@ -4965,8 +5554,11 @@ public class FormInduk extends javax.swing.JFrame {
                 d.setPassword(passwordDfatarBaru.getText());
                 try {
                     kb.insertKaprodi(d);
+
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (sinyalemenDaftar == 2) {
@@ -4976,8 +5568,11 @@ public class FormInduk extends javax.swing.JFrame {
                 d.setPassword(passwordDfatarBaru.getText());
                 try {
                     cd.insert(d);
+
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (sinyalemenDaftar == 3) {
@@ -4987,8 +5582,11 @@ public class FormInduk extends javax.swing.JFrame {
                 d.setPassword(passwordDfatarBaru.getText());
                 try {
                     ca.insert(d);
+
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FormInduk.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -5043,8 +5641,11 @@ public class FormInduk extends javax.swing.JFrame {
             isiTabeladmin();
             CardLayout cad = (CardLayout) kontenAd.getLayout();
             cad.show(kontenAd, "listAd");
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_daftarUserActionPerformed
 
@@ -5057,8 +5658,11 @@ public class FormInduk extends javax.swing.JFrame {
         m.setStatus(editStatusAdmin.getText());
         try {
             cm.update(m);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         editMahasiswa.hide();
         editMahasiswa.dispose();
@@ -5077,8 +5681,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             m = cd.getDataDepe(nim);
             loadPesan("siswa", 1);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         if (mailContent1.getText().length() != 0) {
@@ -5106,8 +5713,11 @@ public class FormInduk extends javax.swing.JFrame {
                 newMail1.hide();
                 newMail1.dispose();
                 this.loadPesan("dosen", 0);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             JOptionPane.showMessageDialog(mailContent, "isi pesan tidak boleh kosong");
@@ -5125,8 +5735,11 @@ public class FormInduk extends javax.swing.JFrame {
             // TODO add your handling code here:
             this.loadPesan("dosen", 0);
 
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton28ActionPerformed
 
@@ -5145,18 +5758,22 @@ public class FormInduk extends javax.swing.JFrame {
         p.setNip(nip);
         p.setJumlah(ajukanJumlahKlpk.getText());
         p.setAjukan((this.showDateNow(row) + " " + this.showTimeNow()));
-        p.setKelompok("");
+        p.setMaksKelompok(Integer.parseInt(maksPerKelompok.getText()));
+
         p.setDeskripsi(deskripsiProyekDos.getText());
         ControllerProyek cp = new ControllerProyek();
         try {
             cp.insert(p);
             ajukanJudul.setText("");
             ajukanJumlahKlpk.setText("");
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ajukanProyekActionPerformed
-
+//LOGIN AWAL
     private void ayoMasukActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ayoMasukActionPerformed
         // TODO add your handling code here:
         nim = idMasuk.getText();
@@ -5171,8 +5788,11 @@ public class FormInduk extends javax.swing.JFrame {
                         recordPekanMhs = cpm.getAll(nim);
                         mhs = cm.getData(nim);
 
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     isiTabeldataNilaiMhs();
                     cad.show(induk, "menu");
@@ -5181,8 +5801,11 @@ public class FormInduk extends javax.swing.JFrame {
                     kelolaBaru kb = new kelolaBaru();
                     try {
                         dosenisme = kb.getData(nip);
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     cad.show(induk, "kaprodi");
                 }
@@ -5199,8 +5822,11 @@ public class FormInduk extends javax.swing.JFrame {
                                     mhs = m;
                                     try {
                                         recordPekanMhs = cpm.getAll(nip, m.getNim());
+
+
                                     } catch (SQLException ex) {
-                                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                                        Logger.getLogger(FormInduk.class
+                                                .getName()).log(Level.SEVERE, null, ex);
                                     }
                                     isiTabelPekanMhs();
                                     namaMhsNilai.setText(m.getNama());
@@ -5217,13 +5843,19 @@ public class FormInduk extends javax.swing.JFrame {
                             }
                         });
                         recordTemanKelompok = cd.getAllBinaan(nip);
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     try {
                         dosenisme = cd.getData(nip);
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     dosenExist = true;
                     isiTabelBimbingan();
@@ -5233,8 +5865,11 @@ public class FormInduk extends javax.swing.JFrame {
                 if (sinyalemen == 3) {
                     try {
                         adminisme = ca.getData(nip);
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                     cad.show(induk, "admin");
                 }
@@ -5268,8 +5903,11 @@ public class FormInduk extends javax.swing.JFrame {
                     }
                     try {
                         recordPekanMhs = cpm.getAll(nip, mhs.getNim());
+
+
                     } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FormInduk.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(mailContent, "Nilai diluar range");
@@ -5294,8 +5932,11 @@ public class FormInduk extends javax.swing.JFrame {
         try {
             cp.update(pro);
             accProyek.hide();
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_accProOkActionPerformed
 
@@ -5316,8 +5957,11 @@ public class FormInduk extends javax.swing.JFrame {
             // TODO add your handling code here:
             pro.setDeskripsi(dscProDos.getText());
             cp.update(pro);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton30ActionPerformed
 
@@ -5326,22 +5970,19 @@ public class FormInduk extends javax.swing.JFrame {
         int temp = Integer.parseInt(pro.getJumlah());
         if (temp != 0) {
             try {
-                temp -= 1;
-                pro.setJumlah("" + temp);
-                cp.updateJumlah(pro);
-                mhs.setIdProyek(Integer.parseInt(pro.getIdPro()));
-                mhs.setNim(nim);
-                try {
-                    cm.updateIdPro(mhs);
-                } catch (SQLException ex) {
-                    Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
-                }
+
+                jLabel94.setText("anda memilih judul " + pro.getJudul());
                 recordProyekII = cp.getAllPTII();
                 isiTabelPilihProjMhs("II");
                 recordProyekI = cp.getAllPTI();
                 isiTabelPilihProjMhs("I");
+                pilihProjMhs.setVisible(true);
+                jScrollPane18.setVisible(true);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_ambilProjekActionPerformed
@@ -5352,8 +5993,11 @@ public class FormInduk extends javax.swing.JFrame {
             try {
                 mhs.setPassword(jPasswordField1.getText());
                 cm.updatePassMhs(mhs);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -5364,8 +6008,11 @@ public class FormInduk extends javax.swing.JFrame {
             try {
                 dosenisme.setPassword(jPasswordField3.getText());
                 cd.updatePassDosen(dosenisme);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton31ActionPerformed
@@ -5377,8 +6024,11 @@ public class FormInduk extends javax.swing.JFrame {
                 dosenisme.setPassword(jPasswordField6.getText());
                 System.out.println("" + dosenisme.getPassword());
                 kb.updatePassKaprodi(dosenisme);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton33ActionPerformed
@@ -5389,8 +6039,11 @@ public class FormInduk extends javax.swing.JFrame {
             try {
                 adminisme.setPassword(jPasswordField7.getText());
                 ca.updatePassAdmin(adminisme);
+
+
             } catch (SQLException ex) {
-                Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton34ActionPerformed
@@ -5402,8 +6055,11 @@ public class FormInduk extends javax.swing.JFrame {
             k.setKelas(namaKelas.getText());
             KelasController kk = new KelasController();
             kk.insert(k);
+
+
         } catch (SQLException ex) {
-            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton35ActionPerformed
 
@@ -5413,6 +6069,7 @@ public class FormInduk extends javax.swing.JFrame {
         int a = jfc.showOpenDialog(null);
         if (a == 0) {
             File file = jfc.getSelectedFile();
+            namafile = file.getName();
             String dir = file.getAbsolutePath();
             jTextField1.setText(dir);
             if (jTextField1.getText() != null) {
@@ -5423,7 +6080,22 @@ public class FormInduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton36ActionPerformed
 
     private void jButton37ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton37ActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:           
+            Dosen d;
+            d = cm.getDataDepe(nim);
+
+
+            try {
+                System.out.println("" + jTextField1.getText());
+                ControllerFile cf = new ControllerFile();
+                cf.upload(d.getNip(), nim, this.showDateNow(0), namafile,
+                        jTextField1.getText(), "C:\\Users\\haluan\\Documents\\NetBeansProjects\\PengelolaProting\\file\\" + namafile);
+            } catch (Exception ex) {
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton37ActionPerformed
 
     private void inputNilaiMhsPkn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputNilaiMhsPkn1ActionPerformed
@@ -5433,7 +6105,7 @@ public class FormInduk extends javax.swing.JFrame {
                 pekanKlmpk p = new pekanKlmpk();
                 p.setNip(nip);
                 if (Integer.parseInt(nilaiPekanMhs1.getText()) < 100 && Integer.parseInt(nilaiPekanMhs1.getText()) > 0) {
-                    p.setIdProyek(Integer.parseInt(proy.getIdPro()));
+                    p.setIdKelompok(kel.getIdKelompok());
                     p.setPekan(pekanMhs1.getSelectedItem().toString());
                     p.setNilai(nilaiPekanMhs1.getText());
 
@@ -5443,12 +6115,16 @@ public class FormInduk extends javax.swing.JFrame {
 
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(mailContent, "Akses ditolak");
-                    }
-                    try {
-                        System.out.println("" + proy.getIdPro());
-                        recordPekanKlpk = cpk.getAll(nip, proy.getIdPro());
-                    } catch (SQLException ex) {
-                        Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+                    } finally {
+                        try {
+                            System.out.println("" + proy.getIdProyek());
+                            recordPekanKlpk = cpk.getAll(nip, "" + proy.getIdProyek());
+
+
+                        } catch (SQLException ex) {
+                            Logger.getLogger(FormInduk.class
+                                    .getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(mailContent, "Nilai diluar range");
@@ -5469,6 +6145,97 @@ public class FormInduk extends javax.swing.JFrame {
         cad.show(kontenDos, "setelan");
     }//GEN-LAST:event_jButton16ActionPerformed
 
+    private void jButton38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton38ActionPerformed
+        // TODO add your handling code here:
+        Kelompok p = new Kelompok();
+        p.setProposal(Integer.parseInt(jTextField2.getText()));
+        p.setIdKelompok(kel.getIdKelompok());
+        System.out.println("" + p.getProposal() + "   " + p.getIdKelompok());
+        ck.insertNilaiProposal(p);
+    }//GEN-LAST:event_jButton38ActionPerformed
+
+    private void jButton39ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton39ActionPerformed
+        // TODO add your handling code here:
+        Kelompok k = new Kelompok();
+        k.setNamaKelompok(jTextField11.getText());
+        k.setIdProyek(mhs.getIdProyek());
+    }//GEN-LAST:event_jButton39ActionPerformed
+
+    private void jButton40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton40ActionPerformed
+
+        try {
+            // TODO add your handling code here:
+            isiTabelPilihKelompok(mhs.getStatus());
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        ControllerKelompok ck = new ControllerKelompok();
+        try {
+            int temp = Integer.parseInt(pro.getJumlah());
+            temp -= 1;
+            pro.setJumlah("" + temp);
+            cp.updateJumlah(pro);
+            Kelompok k = new Kelompok();
+            k.setNamaKelompok(jTextField12.getText());
+            k.setIdProyek(pro.getIdProyek());
+            k.setMaksKelompok(pro.getMaksKelompok());
+            k.setDiajukan(nim);
+
+            try {
+                Kelompok kk = ck.insert(k);
+                jButton40.setVisible(false);
+                jLabel94.setText("ANDA SUDAH MENDAFTARKAN KELOMPOK");
+                isiTabelPilihKelompok(mhs.getStatus());
+                mhs.setIdKelompok(kk.getIdKelompok());
+                cm.updateIdKelompok(mhs);
+
+
+
+            } catch (SQLException ex) {
+                Logger.getLogger(FormInduk.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(mailContent, "Pilih Projek Terlebih Dahulu");
+        }
+    }//GEN-LAST:event_jButton40ActionPerformed
+
+    private void jButton41ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton41ActionPerformed
+        // TODO add your handling code here:
+        mhs.setIdKelompok(kel.getIdKelompok());
+        System.out.println("MHS " + mhs.getIdKelompok());
+        try {
+            cm.updateIdKelompok(mhs);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormInduk.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton41ActionPerformed
+
+    private void jButton43ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton43ActionPerformed
+        // TODO add your handling code here:
+        Kelompok p = new Kelompok();
+        p.setDokumentasi(Integer.parseInt(jTextField13.getText()));
+        p.setIdKelompok(kel.getIdKelompok());
+        System.out.println("" + p.getProposal() + "   " + p.getIdKelompok());
+        ck.insertNilaiDokumentasi(p);
+    }//GEN-LAST:event_jButton43ActionPerformed
+
+    private void jButton44ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton44ActionPerformed
+        // TODO add your handling code here:
+        Kelompok p = new Kelompok();
+        p.setPresentasi(Integer.parseInt(jTextField13.getText()));
+        p.setIdKelompok(kel.getIdKelompok());
+        System.out.println("" + p.getProposal() + "   " + p.getIdKelompok());
+        ck.insertNilaiPresentasi(p);
+    }//GEN-LAST:event_jButton44ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -5483,16 +6250,22 @@ public class FormInduk extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormInduk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormInduk.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormInduk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormInduk.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormInduk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormInduk.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormInduk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormInduk.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -5514,6 +6287,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTextField ajukanJumlahKlpk;
     private javax.swing.JButton ajukanProyek;
     private javax.swing.JComboBox ajukanTingkat;
+    private javax.swing.JFrame ambilKelompok;
     private javax.swing.JButton ambilProjek;
     private javax.swing.JButton ayoMasuk;
     private javax.swing.JFrame bacaPsnMasukMhs;
@@ -5576,7 +6350,14 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JButton jButton35;
     private javax.swing.JButton jButton36;
     private javax.swing.JButton jButton37;
+    private javax.swing.JButton jButton38;
+    private javax.swing.JButton jButton39;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton40;
+    private javax.swing.JButton jButton41;
+    private javax.swing.JButton jButton42;
+    private javax.swing.JButton jButton43;
+    private javax.swing.JButton jButton44;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
@@ -5667,7 +6448,21 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel82;
     private javax.swing.JLabel jLabel83;
     private javax.swing.JLabel jLabel84;
+    private javax.swing.JLabel jLabel85;
+    private javax.swing.JLabel jLabel86;
+    private javax.swing.JLabel jLabel87;
+    private javax.swing.JLabel jLabel88;
+    private javax.swing.JLabel jLabel89;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel90;
+    private javax.swing.JLabel jLabel91;
+    private javax.swing.JLabel jLabel92;
+    private javax.swing.JLabel jLabel93;
+    private javax.swing.JLabel jLabel94;
+    private javax.swing.JLabel jLabel95;
+    private javax.swing.JLabel jLabel96;
+    private javax.swing.JLabel jLabel97;
+    private javax.swing.JLabel jLabel98;
     private javax.swing.JLabel jLabelan;
     private javax.swing.JLabel jLabelan1;
     private javax.swing.JMenuBar jMenuBar2;
@@ -5710,6 +6505,14 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel40;
     private javax.swing.JPanel jPanel41;
+    private javax.swing.JPanel jPanel42;
+    private javax.swing.JPanel jPanel43;
+    private javax.swing.JPanel jPanel44;
+    private javax.swing.JPanel jPanel45;
+    private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
+    private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -5748,6 +6551,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane30;
     private javax.swing.JScrollPane jScrollPane31;
+    private javax.swing.JScrollPane jScrollPane32;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
@@ -5760,11 +6564,18 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JTabbedPane jTabbedPane5;
     private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JTabbedPane jTabbedPane7;
+    private javax.swing.JTabbedPane jTabbedPane8;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
+    private javax.swing.JTextField jTextField11;
+    private javax.swing.JTextField jTextField12;
+    private javax.swing.JTextField jTextField13;
+    private javax.swing.JTextField jTextField14;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
@@ -5786,6 +6597,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTable lihatProyekAjuan;
     private javax.swing.JTextArea mailContent;
     private javax.swing.JTextArea mailContent1;
+    private javax.swing.JTextField maksPerKelompok;
     private javax.swing.JPanel menu;
     private javax.swing.JLabel namaDaftar;
     private javax.swing.JTextField namaDaftarBaru;
@@ -5825,6 +6637,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTable pilihProjMhs;
     private javax.swing.JPanel projek;
     private javax.swing.JToggleButton refreshPesanMhs;
+    private javax.swing.JPanel rekapNilaiMhs;
     private javax.swing.JButton sendMail;
     private javax.swing.JButton sendMail1;
     private javax.swing.JPanel setelanMhs;
@@ -5835,6 +6648,7 @@ public class FormInduk extends javax.swing.JFrame {
     private javax.swing.JTabbedPane tabMailMhs;
     private javax.swing.JTable tabPekanMhs;
     private javax.swing.JTable tabPekanMhs1;
+    private javax.swing.JTable tabPilihKelompok;
     private javax.swing.JTable tabelAdminAdmin;
     private javax.swing.JTable tabelDosenAdmin;
     private javax.swing.JTable tabelSiapSetuju;

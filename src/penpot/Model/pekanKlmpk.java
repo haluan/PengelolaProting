@@ -10,7 +10,15 @@ package penpot.Model;
  */
 public class pekanKlmpk extends Proyek{
     private String nip,pekan,nilai;
-    private int idProyek;
+    private int idKelompok;
+
+    public int getIdKelompok() {
+        return idKelompok;
+    }
+
+    public void setIdKelompok(int idKelompok) {
+        this.idKelompok = idKelompok;
+    }
 
     public String getNip() {
         return nip;
@@ -35,13 +43,4 @@ public class pekanKlmpk extends Proyek{
     public void setNilai(String nilai) {
         this.nilai = nilai;
     }
-
-    public int getIdProyek() {
-        return idProyek;
-    }
-
-    public void setIdProyek(int idProyek) {
-        this.idProyek = idProyek;
-    }
-    
 }

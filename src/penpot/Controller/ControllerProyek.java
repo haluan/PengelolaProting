@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import penpot.Koneksi.JembatanLogin;
+import penpot.Model.Kelompok;
 import penpot.Model.Proyek;
 
 /**
@@ -25,7 +26,7 @@ public class ControllerProyek {
     public Proyek insert(Proyek p) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().
                 prepareStatement("insert into proyek (tahun,nip,judul,tingkat,"
-                + "jumlah,ajukan,setuju,pesan,kelompok, deskripsi)"
+                + "jumlah,ajukan,setuju,pesan, deskripsi, maksimalkelompok)"
                 + " values(?,?,?,?,?,?,?,?,?,?)");
         st.setString(3, p.getJudul());
         st.setString(1, p.getTahunAkademik());
@@ -35,8 +36,8 @@ public class ControllerProyek {
         st.setString(6, p.getAjukan());
         st.setString(7, "");
         st.setString(8, "");
-        st.setString(9, "");
-        st.setString(10, p.getDeskripsi());
+        st.setString(9, p.getDeskripsi());
+        st.setInt(10, p.getMaksKelompok());
         try {
             st.executeUpdate();
         } catch (SQLException sq) {
@@ -53,7 +54,7 @@ public class ControllerProyek {
         st.setString(2, p.getSetuju());
         st.setString(3, p.getPesan());
         st.setString(4, p.getDeskripsi());
-        st.setString(5, p.getIdPro());
+        st.setInt(5, p.getIdProyek());
         st.executeUpdate();
     }
 
@@ -61,7 +62,8 @@ public class ControllerProyek {
         String query;
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select idproyek,judul,tingkat, nama, tahun, status,jumlah, "
-                + "ajukan,pesan,setuju, kelompok, deskripsi from proyek "
+                + "ajukan,pesan,setuju, deskripsi"
+                + " from proyek "
                 + "join dosen using (nip)"
                 
                 + "order by nip asc";
@@ -69,7 +71,7 @@ public class ControllerProyek {
         List<Proyek> listPro = new ArrayList<Proyek>();
         while (rs.next()) {
             Proyek p = new Proyek();
-            p.setIdPro(rs.getString("idproyek"));
+            p.setIdProyek(rs.getInt("idproyek"));
             p.setJudul(rs.getString("judul"));
             p.setNama(rs.getString("nama"));
             p.setTingkat(rs.getString("tingkat"));
@@ -79,71 +81,21 @@ public class ControllerProyek {
             p.setAjukan(rs.getString("ajukan"));
             p.setPesan(rs.getString("pesan"));
             p.setSetuju(rs.getString("setuju"));
-            p.setKelompok(rs.getString("kelompok"));
             p.setDeskripsi(rs.getString("deskripsi"));
+          
             listPro.add(p);
         }
 
         return listPro;
     }
     
-    public void insertNilaiProposal(Proyek p){
-        try {
-            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                      + "proyek set proposal=? where idproyek=?");
-
-              st.setInt(1, p.getProposal());
-              st.setString(2, p.getIdPro());
-              st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     
-     public void insertNilaiMingguan(Proyek p){
-        try {
-            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                      + "proyek set mingguan=? where idproyek=?");
-
-              st.setInt(1, p.getMingguan());
-              st.setString(2, p.getIdPro());
-              st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-     
-      public void insertNilaiPresentasi(Proyek p){
-        try {
-            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                      + "proyek set presentasi=? where idproyek=?");
-
-              st.setInt(1, p.getPresentasi());
-              st.setString(2, p.getIdPro());
-              st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-      
-       public void insertNilaiDokumentasi(Proyek p){
-        try {
-            PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                      + "proyek set dokumentasi=? where idproyek=?");
-
-              st.setInt(1, p.getDokumentasi());
-              st.setString(2, p.getIdPro());
-              st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     
      public List<Proyek> getAllPTI() throws SQLException {
         String query;
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select idproyek,judul,tingkat, nama, tahun, status,jumlah, "
-                + "ajukan,pesan,setuju, kelompok, deskripsi from proyek "
+                + "ajukan,pesan,setuju, deskripsi,maksimalkelompok from proyek "
                 + "join dosen using (nip)"
                 +"where tingkat='I' and status='yes'"
                 + "order by nip asc";
@@ -151,7 +103,7 @@ public class ControllerProyek {
         List<Proyek> listPro = new ArrayList<Proyek>();
         while (rs.next()) {
             Proyek p = new Proyek();
-            p.setIdPro(rs.getString("idproyek"));
+            p.setIdProyek(rs.getInt("idproyek"));
             p.setJudul(rs.getString("judul"));
             p.setNama(rs.getString("nama"));
             p.setTingkat(rs.getString("tingkat"));
@@ -161,7 +113,7 @@ public class ControllerProyek {
             p.setAjukan(rs.getString("ajukan"));
             p.setPesan(rs.getString("pesan"));
             p.setSetuju(rs.getString("setuju"));
-            p.setKelompok(rs.getString("kelompok"));
+            p.setMaksKelompok(rs.getInt("maksimalkelompok"));
             p.setDeskripsi(rs.getString("deskripsi"));
             listPro.add(p);
         }
@@ -173,7 +125,7 @@ public class ControllerProyek {
         String query;
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select idproyek,judul,tingkat, nama, tahun, status,jumlah, "
-                + "ajukan,pesan,setuju, kelompok, deskripsi from proyek "
+                + "ajukan,pesan,setuju, deskripsi,maksimalkelompok from proyek "
                 + "join dosen using (nip)"
                 +"where tingkat='II' and status='yes'"
                 + "order by nip asc";
@@ -181,7 +133,7 @@ public class ControllerProyek {
         List<Proyek> listPro = new ArrayList<Proyek>();
         while (rs.next()) {
             Proyek p = new Proyek();
-            p.setIdPro(rs.getString("idproyek"));
+            p.setIdProyek(rs.getInt("idproyek"));
             p.setJudul(rs.getString("judul"));
             p.setNama(rs.getString("nama"));
             p.setTingkat(rs.getString("tingkat"));
@@ -191,13 +143,34 @@ public class ControllerProyek {
             p.setAjukan(rs.getString("ajukan"));
             p.setPesan(rs.getString("pesan"));
             p.setSetuju(rs.getString("setuju"));
-            p.setKelompok(rs.getString("kelompok"));
             p.setDeskripsi(rs.getString("deskripsi"));
+            p.setMaksKelompok(rs.getInt("maksimalkelompok"));
             listPro.add(p);
         }
 
         return listPro;
     }
+     
+     public List<Kelompok> getAllKelompok(String nip) throws SQLException{
+          String query;
+        Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
+        query = "select idkelompok, k.nama, p.judul, p.tahun"
+                + "  from kelompok k join proyek p using (idproyek)"
+                + "join dosen using (nip)"
+                + "where nip='" + nip + "'"
+                + "order by nip asc ";
+        ResultSet rs = st.executeQuery(query);
+        List<Kelompok> listKel=new ArrayList<>();
+        while(rs.next()){
+            Kelompok kel=new Kelompok();
+            kel.setIdKelompok(rs.getInt("idkelompok"));
+            kel.setNamaKelompok(rs.getString(2));
+            kel.setJudul(rs.getString(3));
+            kel.setTahunAkademik(rs.getString(4));
+            listKel.add(kel);
+        }
+        return listKel;
+     }
 
     public List<Proyek> getAllDOsen(String nip) throws SQLException {
         String query;
@@ -211,7 +184,7 @@ public class ControllerProyek {
         List<Proyek> listPro = new ArrayList<Proyek>();
         while (rs.next()) {
             Proyek p = new Proyek();
-            p.setIdPro(rs.getString("idproyek"));
+            p.setIdProyek(rs.getInt("idproyek"));
             p.setJudul(rs.getString("judul"));
             p.setNama(rs.getString("nama"));
             p.setTingkat(rs.getString("tingkat"));
@@ -234,7 +207,7 @@ public class ControllerProyek {
                    + "proyek set jumlah=? where idproyek=?");
 
            st.setString(1, p.getJumlah());
-           st.setString(2, p.getIdPro());
+           st.setInt(2, p.getIdProyek());
            st.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ControllerProyek.class.getName()).log(Level.SEVERE, null, ex);

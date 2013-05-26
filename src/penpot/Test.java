@@ -36,7 +36,7 @@ public class Test extends Thread implements Runnable {
 
             Proyek p = new Proyek();
             for (int i = 0; i < 50; i++) {
-                p.setIdPro("N" + (i + 1));
+                p.setIdProyek((i + 1));
                 p.setJudul("APP" + (i + 1));
                 p.setTahunAkademik("2013");
                 p.setTingkat("II");

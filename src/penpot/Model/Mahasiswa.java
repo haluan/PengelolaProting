@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
  *
  * @author haluan
  */
-public class Mahasiswa extends Proyek{
+public class Mahasiswa extends Kelompok{
     private String nim,nama,password,kelas,status,jenisKelamin
             , jabatan;
     private int nilaiTotal;

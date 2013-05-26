@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import penpot.Koneksi.JembatanLogin;
 import penpot.Model.Dosen;
 import penpot.Model.Kelompok;
@@ -25,14 +27,12 @@ public class ControllerMahasiswa {
 
     private Connection conn = JembatanLogin.getMyLgn().getConnDB();
     private String query;
-    
-    
-    
+
     public Dosen getDataDepe(String nim) throws SQLException {
         Dosen d = new Dosen();
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         String query = "select nip, nim, dosen.nama from mahasiswa "
-                + "join proyek using (idproyek)"
+                + "join kelompok using (idkelompok) join proyek using (idproyek)"
                 + " join dosen using (nip) where nim='" + nim + "'";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
@@ -41,17 +41,17 @@ public class ControllerMahasiswa {
         }
         return d;
     }
-    
-    public Proyek getDataKelompok(String nim) throws SQLException {
-        Proyek p= new Proyek();
+
+   
+
+    public Kelompok getDataKelompok(String nim) throws SQLException {
+        Kelompok p = new Kelompok();
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select idproyek, kelompok from mahasiswa "
-                + "join proyek k using (idproyek)"+
-                "where nim='" + nim + "' order by nim asc";
+        String query = "select k.nama from mahasiswa m join kelompok k using(idkelompok) "
+                + "where nim='" + nim + "' order by nim asc";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
-            p.setIdPro(rs.getString(1));
-            p.setKelompok(rs.getString(2));
+           p.setNamaKelompok(rs.getString(1));
         }
         return p;
     }
@@ -71,12 +71,12 @@ public class ControllerMahasiswa {
         st.executeUpdate();
         return m;
     }
-    
-    public List<Mahasiswa> getKelompok(String idProyek) throws SQLException {
+
+    public List<Mahasiswa> getKelompok(int idkelompok) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         query = "select m.nim, m.nama, kelas,m.status, jabatan from mahasiswa "
-                + "m join proyek using (idProyek) where idproyek='"+idProyek+"'"
-                + "order by nim";
+                + "m join kelompok using(idkelompok) join proyek using (idProyek) where idkelompok=" + idkelompok 
+                + " order by nim";
         ResultSet rs = st.executeQuery(query);
         List<Mahasiswa> listMhs = new ArrayList<Mahasiswa>();
         while (rs.next()) {
@@ -111,22 +111,22 @@ public class ControllerMahasiswa {
 
         return listMhs;
     }
-    
-     public Mahasiswa getData(String nim) throws SQLException {
+
+    public Mahasiswa getData(String nim) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
         Mahasiswa m = new Mahasiswa();
-        query = "select nim, nama, kelas,status,jabatan, jeniskelamin, idproyek from mahasiswa "
-                + "where nim ='"+nim+"'";
+        query = "select nim, nama, kelas,status,jabatan, jeniskelamin, idkelompok from mahasiswa "
+                + "where nim ='" + nim + "'";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()) {
-            
+
             m.setNim(rs.getString("nim"));
             m.setNama(rs.getString("nama"));
             m.setKelas(rs.getString("kelas"));
             m.setStatus(rs.getString("status"));
             m.setJabatan(rs.getString("jabatan"));
             m.setJenisKelamin(rs.getString("jeniskelamin"));
-            m.setIdProyek(rs.getInt("idproyek"));
+            m.setIdKelompok(rs.getInt("idkelompok"));
         }
 
         return m;
@@ -142,24 +142,24 @@ public class ControllerMahasiswa {
         st.setString(4, m.getNim());
         st.executeUpdate();
     }
-    
-    public void updateIdPro(Mahasiswa m) throws SQLException {
-        PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
-                + "mahasiswa set idproyek=? where nim=?");
 
-        st.setInt(1, m.getIdProyek());
+    public void updateIdKelompok(Mahasiswa m) throws SQLException {
+        PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+                + "mahasiswa set idkelompok=? where nim=?");
+
+        st.setInt(1, m.getIdKelompok());
         st.setString(2, m.getNim());
         st.executeUpdate();
     }
-    
-    public void updatePassMhs(Mahasiswa m) throws SQLException{
-          PreparedStatement st=JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
+
+    public void updatePassMhs(Mahasiswa m) throws SQLException {
+        PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().prepareStatement("update "
                 + "mahasiswa set password=? where nim=?");
-        
+
         st.setString(1, m.getPassword());
         st.setString(2, m.getNim());
         st.executeUpdate();
-     }
+    }
 
     public void delete(String nim) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().

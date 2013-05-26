@@ -20,19 +20,21 @@ import penpot.Model.pekanKlmpk;
 public class ControllerPekanKlmpk {
     public pekanKlmpk insert(pekanKlmpk p) throws SQLException {
         PreparedStatement st = JembatanLogin.getMyLgn().getConnDB().
-                prepareStatement("insert into pekankelompok (nip,idproyek,pekan,nilai)"
+                prepareStatement("insert into pekankelompok (nip,idkelompok,pekan,nilai)"
                 + " values(?,?,?,?)");
         st.setString(1, p.getNip());
-        st.setInt(2, p.getIdProyek());
+        st.setInt(2, p.getIdKelompok());
         st.setString(3, p.getPekan());
         st.setString(4, p.getNilai());
         st.executeUpdate();
         return p;
     }
 
-    public List<pekanKlmpk> getAll(String nip, String idproyek) throws SQLException {
+    public List<pekanKlmpk> getAll(String nip, String idkelompok) throws SQLException {
         Statement st = JembatanLogin.getMyLgn().getConnDB().createStatement();
-        String query = "select pekan, nilai from pekankelompok where nip='" + nip + "' and idproyek='" + idproyek + "'"
+        String query = "select pekan, "
+                + "nilai from pekankelompok where "
+                + "nip='" + nip + "' and idkelompok='" + idkelompok + "'"
                 + "order by pekan asc";
         ResultSet rs = st.executeQuery(query);
         List<pekanKlmpk> listNilai = new ArrayList<pekanKlmpk>();

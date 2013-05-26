@@ -4,46 +4,26 @@
  */
 package penpot.Model;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author haluan
  */
 public class Proyek extends Dosen{
-    private String idPro, judul, nip, tahunAkademik, tingkat, 
-            status,jumlah,ajukan,setuju,pesan, kelompok, deskripsi;
-    private int proposal,mingguan,presentasi,dokumentasi;
+    private String judul, nip, tahunAkademik, tingkat, 
+            status,jumlah,ajukan,setuju,pesan, deskripsi;
+    private int idProyek, maksKelompok;
 
-    public int getProposal() {
-        return proposal;
+    public int getMaksKelompok() {
+        return maksKelompok;
     }
 
-    public void setProposal(int proposal) {
-        this.proposal = proposal;
+    public void setMaksKelompok(int maksKelompok) {
+        this.maksKelompok = maksKelompok;
     }
-
-    public int getMingguan() {
-        return mingguan;
-    }
-
-    public void setMingguan(int mingguan) {
-        this.mingguan = mingguan;
-    }
-
-    public int getPresentasi() {
-        return presentasi;
-    }
-
-    public void setPresentasi(int presentasi) {
-        this.presentasi = presentasi;
-    }
-
-    public int getDokumentasi() {
-        return dokumentasi;
-    }
-
-    public void setDokumentasi(int dokumentasi) {
-        this.dokumentasi = dokumentasi;
-    }
+    
+    
     
     public String getDeskripsi() {
         return deskripsi;
@@ -53,13 +33,7 @@ public class Proyek extends Dosen{
         this.deskripsi = deskripsi;
     }
 
-    public String getKelompok() {
-        return kelompok;
-    }
-
-    public void setKelompok(String kelompok) {
-        this.kelompok = kelompok;
-    }
+   
 
     public String getPesan() {
         return pesan;
@@ -127,14 +101,15 @@ public class Proyek extends Dosen{
     public void setTahunAkademik(String tahunAkademik) {
         this.tahunAkademik = tahunAkademik;
     }
-    public String getIdPro() {
-        return idPro;
+
+    public int getIdProyek() {
+        return idProyek;
     }
 
-    public void setIdPro(String idPro) {
-        this.idPro = idPro;
+    public void setIdProyek(int idProyek) {
+        this.idProyek = idProyek;
     }
-
+   
     public String getJudul() {
         return judul;
     }
